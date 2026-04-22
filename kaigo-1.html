@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クイズ｜介護・改善 語彙</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sun: #FFD93D;
+    --sky: #6BCB77;
+    --coral: #FF6B6B;
+    --ocean: #4D96FF;
+    --lavender: #C77DFF;
+    --peach: #FFB347;
+    --mint: #A8E6CF;
+    --pink: #FF8FAB;
+    --white: #FFFDF5;
+    --dark: #2D2A24;
+    --card-bg: #FFFEF0;
+    --shadow: rgba(45,42,36,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Zen Maru Gothic', sans-serif;
+    background: var(--white);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #FFF176 0%, #FFD93D 35%, #FFB347 65%, #FF8FAB 100%);
+    padding: 36px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(255,107,107,0.2) 0%, transparent 40%);
+  }
+  .hero-title {
+    font-size: clamp(1.5rem, 5vw, 2.4rem);
+    font-weight: 900;
+    color: var(--dark);
+    position: relative;
+    line-height: 1.3;
+    text-shadow: 3px 3px 0 rgba(255,255,255,0.5);
+    letter-spacing: 0.03em;
+  }
+  .hero-sub {
+    font-size: 0.9rem;
+    color: #5C4A00;
+    margin-top: 8px;
+    position: relative;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.25;
+  }
+  .deco-circle.c1 { width: 120px; height: 120px; background: var(--coral); top: -30px; right: -20px; }
+  .deco-circle.c2 { width: 80px; height: 80px; background: var(--ocean); bottom: -20px; left: 10px; }
+  .deco-circle.c3 { width: 50px; height: 50px; background: var(--sky); top: 10px; left: 40%; }
+
+  /* CATEGORY TABS */
+  .cat-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 14px 14px 0;
+    justify-content: center;
+  }
+  .cat-btn {
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+    opacity: 0.7;
+  }
+  .cat-btn.active { opacity: 1; transform: scale(1.06); box-shadow: 0 3px 10px var(--shadow); }
+
+  /* SETTINGS BAR */
+  .settings-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,253,240,0.8);
+    border-bottom: 2px dashed #FFD93D;
+  }
+  .mode-toggle {
+    display: flex;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2.5px solid var(--dark);
+    box-shadow: 3px 3px 0 var(--dark);
+  }
+  .mode-btn {
+    padding: 6px 16px;
+    border: none;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    color: var(--dark);
+  }
+  .mode-btn.active { background: var(--ocean); color: white; }
+
+  .count-select {
+    border: 2.5px solid var(--dark);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: white;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--dark);
+  }
+
+  .start-btn {
+    background: var(--coral);
+    color: white;
+    border: 2.5px solid var(--dark);
+    border-radius: 20px;
+    padding: 8px 22px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+  .start-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+  .start-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 var(--dark); }
+
+  /* PROGRESS */
+  .progress-wrap {
+    padding: 12px 16px 6px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #7A6B00;
+    margin-bottom: 6px;
+  }
+  .progress-bar-bg {
+    height: 10px;
+    background: #F0ECD0;
+    border-radius: 10px;
+    border: 2px solid var(--dark);
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--sky), var(--ocean));
+    transition: width 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* QUIZ CARD */
+  .quiz-area {
+    padding: 14px;
+  }
+  .question-card {
+    background: var(--card-bg);
+    border: 3px solid var(--dark);
+    border-radius: 20px;
+    box-shadow: 5px 5px 0 var(--dark);
+    padding: 22px 18px 18px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: var(--q-accent, var(--sun));
+  }
+  .cat-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    border: 2px solid var(--dark);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+    background: var(--q-accent, var(--sun));
+    color: var(--dark);
+  }
+  .question-text {
+    font-size: clamp(1.3rem, 5vw, 1.9rem);
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.5;
+    padding: 10px 0 6px;
+    letter-spacing: 0.05em;
+  }
+  .question-hint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #9A8B5A;
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  /* OPTIONS */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .option-btn {
+    background: white;
+    border: 2.5px solid var(--dark);
+    border-radius: 14px;
+    padding: 12px 10px;
+    cursor: pointer;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 3px 3px 0 var(--dark);
+    transition: all 0.15s;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .option-btn:hover:not(:disabled) { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 var(--dark); }
+  .option-btn:active:not(:disabled) { transform: translate(1px,1px); box-shadow: 2px 2px 0 var(--dark); }
+  .option-btn.correct { background: #BCFFD1; border-color: #2D8A4E; box-shadow: 3px 3px 0 #2D8A4E; }
+  .option-btn.wrong { background: #FFCCCC; border-color: #CC3333; box-shadow: 3px 3px 0 #CC3333; }
+  .option-btn:disabled { cursor: default; }
+
+  /* FURIGANA in option */
+  .furi-word { display: inline-flex; flex-direction: column; align-items: center; vertical-align: bottom; }
+  .furi-word rt, .furi-top { font-size: 0.6em; color: #7A6B00; font-weight: 500; line-height: 1; }
+  ruby { ruby-align: center; }
+
+  /* FEEDBACK */
+  .feedback-bar {
+    text-align: center;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin: 0 14px 12px;
+    border: 2.5px solid var(--dark);
+    display: none;
+    animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .feedback-bar.correct { background: #BCFFD1; }
+  .feedback-bar.wrong { background: #FFCCCC; }
+  @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .next-btn {
+    display: block;
+    margin: 0 auto 16px;
+    background: var(--sun);
+    color: var(--dark);
+    border: 2.5px solid var(--dark);
+    border-radius: 20px;
+    padding: 10px 30px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 4px 4px 0 var(--dark);
+    transition: all 0.15s;
+    display: none;
+  }
+  .next-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--dark); }
+
+  /* RESULT */
+  .result-screen {
+    display: none;
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 4rem; margin-bottom: 10px; }
+  .result-score {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--dark);
+    margin-bottom: 8px;
+  }
+  .result-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #7A6B00;
+    margin-bottom: 20px;
+  }
+  .stars { font-size: 2rem; letter-spacing: 4px; margin-bottom: 16px; }
+
+  .wrong-list {
+    text-align: left;
+    background: #FFF8E1;
+    border: 2.5px solid var(--dark);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 4px 4px 0 var(--dark);
+  }
+  .wrong-list h3 { font-size: 0.9rem; font-weight: 800; margin-bottom: 10px; color: var(--coral); }
+  .wrong-item {
+    background: white;
+    border: 2px solid #E0D8B0;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+  }
+  .wrong-item .q-label { font-weight: 700; color: #9A8B5A; font-size: 0.7rem; }
+  .wrong-item .correct-ans { color: #2D8A4E; font-weight: 800; margin-top: 2px; }
+
+  .restart-btn {
+    background: var(--sky);
+    color: white;
+    border: 2.5px solid var(--dark);
+    border-radius: 20px;
+    padding: 12px 32px;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 5px 5px 0 var(--dark);
+    transition: all 0.15s;
+    margin-right: 10px;
+  }
+  .restart-btn:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--dark); }
+
+  /* WELCOME */
+  .welcome-screen {
+    padding: 24px 16px;
+    text-align: center;
+  }
+  .welcome-screen h2 { font-size: 1.3rem; font-weight: 900; margin-bottom: 10px; }
+  .welcome-screen p { font-size: 0.85rem; color: #7A6B00; line-height: 1.7; }
+  .cat-preview {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  .cat-pill {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 2px solid var(--dark);
+  }
+  .total-badge {
+    background: var(--sun);
+    border: 2.5px solid var(--dark);
+    border-radius: 16px;
+    padding: 12px 20px;
+    margin: 16px auto;
+    display: inline-block;
+    font-weight: 900;
+    font-size: 1.1rem;
+    box-shadow: 4px 4px 0 var(--dark);
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="deco-circle c1"></div>
+  <div class="deco-circle c2"></div>
+  <div class="deco-circle c3"></div>
+  <div class="hero-title">🌸 介護（かいご）語彙（ごい）クイズ 🌸</div>
+  <div class="hero-sub">かいご・かいぜん ことばのれんしゅう</div>
+</div>
+
+<!-- WELCOME -->
+<div class="welcome-screen" id="welcomeScreen">
+  <h2>ようこそ！</h2>
+  <p>このクイズは<ruby>介護<rt>かいご</rt></ruby>・<ruby>改善<rt>かいぜん</rt></ruby>の<ruby>語彙<rt>ごい</rt></ruby>を<ruby>練習<rt>れんしゅう</rt></ruby>します。</p>
+  <div class="total-badge">📚 <ruby>全<rt>ぜん</rt></ruby>180<ruby>語<rt>ご</rt></ruby> ✨</div>
+  <div class="cat-preview">
+    <div class="cat-pill" style="background:#FFD93D">からだのぶぶん 37語</div>
+    <div class="cat-pill" style="background:#6BCB77">たべもの 24語</div>
+    <div class="cat-pill" style="background:#FF8FAB">たべるかつどう 20語</div>
+    <div class="cat-pill" style="background:#4D96FF;color:white">いどう 26語</div>
+    <div class="cat-pill" style="background:#C77DFF;color:white">びょうき・しょうじょう 32語</div>
+    <div class="cat-pill" style="background:#FFB347">たいのしせい 9語</div>
+  </div>
+  <p><ruby>下<rt>した</rt></ruby>の<ruby>設定<rt>せってい</rt></ruby>でカテゴリとモードを<ruby>選<rt>えら</rt></ruby>んでスタート！</p>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-bar">
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeJP" onclick="setMode('jp')">🇯🇵 JP→ID</button>
+    <button class="mode-btn" id="modeID" onclick="setMode('id')">🇮🇩 ID→JP</button>
+  </div>
+  <select class="count-select" id="countSelect">
+    <option value="10">10 もん</option>
+    <option value="20">20 もん</option>
+    <option value="30">30 もん</option>
+    <option value="50">50 もん</option>
+    <option value="all">ぜんぶ</option>
+  </select>
+  <button class="start-btn" onclick="startQuiz()">▶ スタート！</button>
+</div>
+
+<!-- CATEGORY TABS -->
+<div class="cat-bar" id="catBar">
+  <button class="cat-btn active" data-cat="all" onclick="selectCat(this,'all')" style="background:#FFD93D;color:#2D2A24">ぜんぶ</button>
+  <button class="cat-btn" data-cat="body" onclick="selectCat(this,'body')" style="background:#FF8FAB;color:#2D2A24">からだ</button>
+  <button class="cat-btn" data-cat="food" onclick="selectCat(this,'food')" style="background:#6BCB77;color:#2D2A24">たべもの</button>
+  <button class="cat-btn" data-cat="eating" onclick="selectCat(this,'eating')" style="background:#FFB347;color:#2D2A24">たべかた</button>
+  <button class="cat-btn" data-cat="move" onclick="selectCat(this,'move')" style="background:#4D96FF;color:white">いどう</button>
+  <button class="cat-btn" data-cat="illness" onclick="selectCat(this,'illness')" style="background:#C77DFF;color:white">びょうき</button>
+  <button class="cat-btn" data-cat="posture" onclick="selectCat(this,'posture')" style="background:#A8E6CF;color:#2D2A24">しせい</button>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap hidden" id="progressWrap">
+  <div class="progress-meta">
+    <span id="qCounter">もん 1 / 10</span>
+    <span id="scoreCounter">✅ 0</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-area hidden" id="quizArea">
+  <div class="question-card" id="questionCard">
+    <div class="cat-badge" id="catBadge">からだ</div>
+    <div class="question-text" id="questionText">頭</div>
+    <div class="question-hint" id="questionHint">（にほんごを えらんでね）</div>
+  </div>
+  <div class="options-grid" id="optionsGrid"></div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="feedback-bar" id="feedbackBar">✅ せいかい！</div>
+<button class="next-btn" id="nextBtn" onclick="nextQuestion()">つぎへ →</button>
+
+<!-- RESULT -->
+<div class="result-screen" id="resultScreen">
+  <div class="result-emoji" id="resultEmoji">🎉</div>
+  <div class="result-score" id="resultScore">8 / 10</div>
+  <div class="result-label" id="resultLabel">すごい！</div>
+  <div class="stars" id="resultStars">⭐⭐⭐⭐⭐</div>
+  <div class="wrong-list hidden" id="wrongList">
+    <h3>📝 まちがえたことば</h3>
+    <div id="wrongItems"></div>
+  </div>
+  <button class="restart-btn" onclick="restartQuiz()">🔄 もういちど</button>
+  <button class="restart-btn" style="background:var(--peach)" onclick="backToMenu()">🏠 メニューへ</button>
+</div>
+
+<script>
+const CAT_COLORS = {
+  body:    { bg:'#FF8FAB', accent:'#FF6B9D' },
+  food:    { bg:'#6BCB77', accent:'#4CAF57' },
+  eating:  { bg:'#FFB347', accent:'#FF9000' },
+  move:    { bg:'#4D96FF', accent:'#2277EE' },
+  illness: { bg:'#C77DFF', accent:'#A050DD' },
+  posture: { bg:'#A8E6CF', accent:'#56C596' },
+};
+
+const VOCAB = [
+  // BODY (37)
+  {id:'b1',cat:'body',jp:'あたま',kanji:'頭',romaji:'あたま',id_:'kepala'},
+  {id:'b2',cat:'body',jp:'ひたい',kanji:'額',romaji:'ひたい',id_:'dahi'},
+  {id:'b3',cat:'body',jp:'め',kanji:'目',romaji:'め',id_:'mata'},
+  {id:'b4',cat:'body',jp:'めがしら',kanji:'目頭',romaji:'めがしら',id_:'sudut bagian dalam mata'},
+  {id:'b5',cat:'body',jp:'めじり',kanji:'目尻',romaji:'めじり',id_:'sudut bagian luar mata'},
+  {id:'b6',cat:'body',jp:'みみ',kanji:'耳',romaji:'みみ',id_:'telinga'},
+  {id:'b7',cat:'body',jp:'はな',kanji:'鼻',romaji:'はな',id_:'hidung'},
+  {id:'b8',cat:'body',jp:'くち',kanji:'口',romaji:'くち',id_:'mulut'},
+  {id:'b9',cat:'body',jp:'くちびる',kanji:'唇',romaji:'くちびる',id_:'bibir'},
+  {id:'b10',cat:'body',jp:'あご',kanji:'顎',romaji:'あご',id_:'dagu'},
+  {id:'b11',cat:'body',jp:'くび',kanji:'首',romaji:'くび',id_:'leher'},
+  {id:'b12',cat:'body',jp:'のど',kanji:'喉',romaji:'のど',id_:'tenggorokan'},
+  {id:'b13',cat:'body',jp:'わき',kanji:'脇',romaji:'わき',id_:'ketiak'},
+  {id:'b14',cat:'body',jp:'うで',kanji:'腕',romaji:'うで',id_:'lengan'},
+  {id:'b15',cat:'body',jp:'ひじ',kanji:'肘',romaji:'ひじ',id_:'siku'},
+  {id:'b16',cat:'body',jp:'こし',kanji:'腰',romaji:'こし',id_:'pinggang'},
+  {id:'b17',cat:'body',jp:'てくび',kanji:'手首',romaji:'てくび',id_:'pergelangan tangan'},
+  {id:'b18',cat:'body',jp:'てのひら',kanji:'手のひら',romaji:'てのひら',id_:'telapak tangan'},
+  {id:'b19',cat:'body',jp:'ゆび',kanji:'指',romaji:'ゆび',id_:'jari'},
+  {id:'b20',cat:'body',jp:'ゆびさき',kanji:'指先',romaji:'ゆびさき',id_:'ujung jari'},
+  {id:'b21',cat:'body',jp:'てのこう',kanji:'手の甲',romaji:'てのこう',id_:'punggung tangan'},
+  {id:'b22',cat:'body',jp:'あしくび',kanji:'足首',romaji:'あしくび',id_:'pergelangan kaki'},
+  {id:'b23',cat:'body',jp:'つまさき',kanji:'つま先',romaji:'つまさき',id_:'ujung jari kaki'},
+  {id:'b24',cat:'body',jp:'かた',kanji:'肩',romaji:'かた',id_:'bahu'},
+  {id:'b25',cat:'body',jp:'せなか',kanji:'背中',romaji:'せなか',id_:'punggung'},
+  {id:'b26',cat:'body',jp:'むね',kanji:'胸',romaji:'むね',id_:'dada'},
+  {id:'b27',cat:'body',jp:'しり',kanji:'尻',romaji:'しり',id_:'pantat'},
+  {id:'b28',cat:'body',jp:'はら',kanji:'腹',romaji:'はら',id_:'perut'},
+  {id:'b29',cat:'body',jp:'ひざ',kanji:'膝',romaji:'ひざ',id_:'lutut'},
+  {id:'b30',cat:'body',jp:'かかと',kanji:'踵',romaji:'かかと',id_:'tumit'},
+  {id:'b31',cat:'body',jp:'あしのうら',kanji:'足の裏',romaji:'あしのうら',id_:'telapak kaki'},
+  {id:'b32',cat:'body',jp:'かおいろ',kanji:'顔色',romaji:'かおいろ',id_:'air muka'},
+  {id:'b33',cat:'body',jp:'かんそく',kanji:'患側',romaji:'かんそく',id_:'sisi sakit'},
+  {id:'b34',cat:'body',jp:'けんそく',kanji:'健側',romaji:'けんそく',id_:'sisi sehat'},
+  {id:'b35',cat:'body',jp:'けんこう',kanji:'健康',romaji:'けんこう',id_:'kesehatan'},
+  {id:'b36',cat:'body',jp:'たいちょう',kanji:'体調',romaji:'たいちょう',id_:'kondisi fisik'},
+  {id:'b37',cat:'body',jp:'ばいたるさいん',kanji:'バイタルサイン',romaji:'ばいたるさいん',id_:'tanda-tanda vital'},
+
+  // FOOD (24)
+  {id:'f1',cat:'food',jp:'あげもの',kanji:'あげもの',romaji:'あげもの',id_:'gorengan'},
+  {id:'f2',cat:'food',jp:'いためもの',kanji:'いためもの',romaji:'いためもの',id_:'tumis'},
+  {id:'f3',cat:'food',jp:'おやつ',kanji:'おやつ',romaji:'おやつ',id_:'camilan'},
+  {id:'f4',cat:'food',jp:'おかゆ',kanji:'お粥',romaji:'おかゆ',id_:'bubur'},
+  {id:'f5',cat:'food',jp:'かれーらいす',kanji:'カレーライス',romaji:'かれーらいす',id_:'nasi kari'},
+  {id:'f6',cat:'food',jp:'こんだて',kanji:'献立',romaji:'こんだて',id_:'daftar makanan'},
+  {id:'f7',cat:'food',jp:'こんだてひょう',kanji:'献立表',romaji:'こんだてひょう',id_:'tabel daftar makanan'},
+  {id:'f8',cat:'food',jp:'しゅしょく',kanji:'主食',romaji:'しゅしょく',id_:'makanan pokok'},
+  {id:'f9',cat:'food',jp:'しるもの',kanji:'汁物',romaji:'しるもの',id_:'sup'},
+  {id:'f10',cat:'food',jp:'ぜりー',kanji:'ゼリー',romaji:'ぜりー',id_:'jeli'},
+  {id:'f11',cat:'food',jp:'たまごやき',kanji:'たまご焼き',romaji:'たまごやき',id_:'telur goreng'},
+  {id:'f12',cat:'food',jp:'つけもの',kanji:'漬物',romaji:'つけもの',id_:'acar'},
+  {id:'f13',cat:'food',jp:'てんぷら',kanji:'天ぷら',romaji:'てんぷら',id_:'tempura'},
+  {id:'f14',cat:'food',jp:'とうふ',kanji:'豆腐',romaji:'とうふ',id_:'tahu'},
+  {id:'f15',cat:'food',jp:'どんぶり',kanji:'丼',romaji:'どんぶり',id_:'mangkuk'},
+  {id:'f16',cat:'food',jp:'につけ',kanji:'煮付け',romaji:'につけ',id_:'semur'},
+  {id:'f17',cat:'food',jp:'にもの',kanji:'煮物',romaji:'にもの',id_:'rebusan'},
+  {id:'f18',cat:'food',jp:'はんばーぐ',kanji:'ハンバーグ',romaji:'はんばーぐ',id_:'daging hamburger'},
+  {id:'f19',cat:'food',jp:'ふくしょく',kanji:'副食',romaji:'ふくしょく',id_:'lauk'},
+  {id:'f20',cat:'food',jp:'ぷりん',kanji:'プリン',romaji:'ぷりん',id_:'puding'},
+  {id:'f21',cat:'food',jp:'むぎちゃ',kanji:'麦茶',romaji:'むぎちゃ',id_:'teh gandum'},
+  {id:'f22',cat:'food',jp:'めにゅー',kanji:'メニュー',romaji:'めにゅー',id_:'menu'},
+  {id:'f23',cat:'food',jp:'やきざかな',kanji:'焼き魚',romaji:'やきざかな',id_:'ikan bakar'},
+  {id:'f24',cat:'food',jp:'よーぐると',kanji:'ヨーグルト',romaji:'よーぐると',id_:'yoghurt'},
+
+  // EATING (20)
+  {id:'e1',cat:'eating',jp:'あたためる',kanji:'温める',romaji:'あたためる',id_:'menghangatkan'},
+  {id:'e2',cat:'eating',jp:'えぷろん',kanji:'エプロン',romaji:'えぷろん',id_:'celemek'},
+  {id:'e3',cat:'eating',jp:'えんげ',kanji:'嚥下',romaji:'えんげ',id_:'menelan'},
+  {id:'e4',cat:'eating',jp:'きざむ',kanji:'きざむ',romaji:'きざむ',id_:'memotong'},
+  {id:'e5',cat:'eating',jp:'ごえん',kanji:'誤嚥',romaji:'ごえん',id_:'aspirasi (tersedak paru)'},
+  {id:'e6',cat:'eating',jp:'こぼす',kanji:'こぼす',romaji:'こぼす',id_:'menumpahkan'},
+  {id:'e7',cat:'eating',jp:'さげる',kanji:'下げる',romaji:'さげる',id_:'membereskan alat makan'},
+  {id:'e8',cat:'eating',jp:'さます',kanji:'冷ます',romaji:'さます',id_:'mendinginkan'},
+  {id:'e9',cat:'eating',jp:'しょくひん',kanji:'食品',romaji:'しょくひん',id_:'makanan'},
+  {id:'e10',cat:'eating',jp:'しょくよく',kanji:'食欲',romaji:'しょくよく',id_:'nafsu makan'},
+  {id:'e11',cat:'eating',jp:'すいぶんほきゅう',kanji:'水分補給',romaji:'すいぶんほきゅう',id_:'asupan cairan'},
+  {id:'e12',cat:'eating',jp:'せきこむ',kanji:'咳込む',romaji:'せきこむ',id_:'batuk (keras)'},
+  {id:'e13',cat:'eating',jp:'とろみ',kanji:'とろみ',romaji:'とろみ',id_:'kekentalan'},
+  {id:'e14',cat:'eating',jp:'つける',kanji:'つける',romaji:'つける',id_:'mengentalkan'},
+  {id:'e15',cat:'eating',jp:'のみこむ',kanji:'飲み込む',romaji:'のみこむ',id_:'menelan'},
+  {id:'e16',cat:'eating',jp:'ひとくちだい',kanji:'一口大',romaji:'ひとくちだい',id_:'ukuran satu gigitan'},
+  {id:'e17',cat:'eating',jp:'むせる',kanji:'むせる',romaji:'むせる',id_:'tersedak'},
+  {id:'e18',cat:'eating',jp:'りょう',kanji:'量',romaji:'りょう',id_:'jumlah'},
+  {id:'e19',cat:'eating',jp:'りーだー',kanji:'リーダー',romaji:'りーだー',id_:'kepala tim'},
+  {id:'e20',cat:'eating',jp:'きろく',kanji:'記録',romaji:'きろく',id_:'catatan'},
+
+  // MOBILIZATION (26)
+  {id:'m1',cat:'move',jp:'いじょう',kanji:'移乗',romaji:'いじょう',id_:'beralih (pindah duduk)'},
+  {id:'m2',cat:'move',jp:'いどう',kanji:'移動',romaji:'いどう',id_:'berpindah'},
+  {id:'m3',cat:'move',jp:'いどうようりふと',kanji:'移動用リフト',romaji:'いどうようりふと',id_:'alat pemindah'},
+  {id:'m4',cat:'move',jp:'おきあがる',kanji:'起き上がる',romaji:'おきあがる',id_:'bangkit'},
+  {id:'m5',cat:'move',jp:'かける',kanji:'かける',romaji:'かける',id_:'mengerem'},
+  {id:'m6',cat:'move',jp:'がしょう',kanji:'臥床',romaji:'がしょう',id_:'berbaring'},
+  {id:'m7',cat:'move',jp:'くるまいす',kanji:'車いす',romaji:'くるまいす',id_:'kursi roda'},
+  {id:'m8',cat:'move',jp:'こえかけ',kanji:'声かけ',romaji:'こえかけ',id_:'sapaan / interaksi'},
+  {id:'m9',cat:'move',jp:'ささえる',kanji:'支える',romaji:'ささえる',id_:'menopang'},
+  {id:'m10',cat:'move',jp:'しるばーかー',kanji:'シルバーカー',romaji:'しるばーかー',id_:'troli lansia'},
+  {id:'m11',cat:'move',jp:'すべる',kanji:'すべる',romaji:'すべる',id_:'tergelincir'},
+  {id:'m12',cat:'move',jp:'すらいでぃんぐしーと',kanji:'スライディングシート',romaji:'すらいでぃんぐしーと',id_:'kursi geser'},
+  {id:'m13',cat:'move',jp:'つえ',kanji:'杖',romaji:'つえ',id_:'tongkat'},
+  {id:'m14',cat:'move',jp:'つく',kanji:'つく',romaji:'つく',id_:'memakai tongkat'},
+  {id:'m15',cat:'move',jp:'つかまる',kanji:'つかまる',romaji:'つかまる',id_:'berpegangan'},
+  {id:'m16',cat:'move',jp:'てすり',kanji:'手すり',romaji:'てすり',id_:'handrail (pegangan)'},
+  {id:'m17',cat:'move',jp:'にぎる',kanji:'握る',romaji:'にぎる',id_:'mencengkeram'},
+  {id:'m18',cat:'move',jp:'ねがえり',kanji:'寝返り',romaji:'ねがえり',id_:'membalik badan'},
+  {id:'m19',cat:'move',jp:'はくじょう',kanji:'白杖',romaji:'はくじょう',id_:'tongkat putih'},
+  {id:'m20',cat:'move',jp:'ぶれーき',kanji:'ブレーキ',romaji:'ぶれーき',id_:'rem'},
+  {id:'m21',cat:'move',jp:'ほこうき',kanji:'歩行器',romaji:'ほこうき',id_:'alat bantu jalan'},
+  {id:'m22',cat:'move',jp:'まえかがみ',kanji:'前屈み',romaji:'まえかがみ',id_:'membungkuk'},
+  {id:'m23',cat:'move',jp:'ゆうどう',kanji:'誘導',romaji:'ゆうどう',id_:'panduan'},
+  {id:'m24',cat:'move',jp:'ゆか',kanji:'床',romaji:'ゆか',id_:'lantai'},
+  {id:'m25',cat:'move',jp:'りしょう',kanji:'離床',romaji:'りしょう',id_:'beranjak dari tempat tidur'},
+  {id:'m26',cat:'move',jp:'かいごしょく',kanji:'介護職',romaji:'かいごしょく',id_:'staf perawat lansia'},
+
+  // ILLNESS (32)
+  {id:'i1',cat:'illness',jp:'かいせん',kanji:'疥癬',romaji:'かいせん',id_:'skabies'},
+  {id:'i2',cat:'illness',jp:'かぜ',kanji:'風邪',romaji:'かぜ',id_:'masuk angin / flu'},
+  {id:'i3',cat:'illness',jp:'こうけつあつしょう',kanji:'高血圧症',romaji:'こうけつあつしょう',id_:'hipertensi'},
+  {id:'i4',cat:'illness',jp:'しょくちゅうどく',kanji:'食中毒',romaji:'しょくちゅうどく',id_:'keracunan makanan'},
+  {id:'i5',cat:'illness',jp:'にんちしょう',kanji:'認知症',romaji:'にんちしょう',id_:'demensia'},
+  {id:'i6',cat:'illness',jp:'ねっちゅうしょう',kanji:'熱中症',romaji:'ねっちゅうしょう',id_:'heatstroke'},
+  {id:'i7',cat:'illness',jp:'はいえん',kanji:'肺炎',romaji:'はいえん',id_:'pneumonia'},
+  {id:'i8',cat:'illness',jp:'はくないしょう',kanji:'白内障',romaji:'はくないしょう',id_:'katarak'},
+  {id:'i9',cat:'illness',jp:'あれるぎー',kanji:'アレルギー',romaji:'あれるぎー',id_:'alergi'},
+  {id:'i10',cat:'illness',jp:'いたい',kanji:'痛い',romaji:'いたい',id_:'sakit / nyeri'},
+  {id:'i11',cat:'illness',jp:'おうと',kanji:'嘔吐',romaji:'おうと',id_:'muntah'},
+  {id:'i12',cat:'illness',jp:'かたまひ',kanji:'片麻痺',romaji:'かたまひ',id_:'lumpuh sebelah'},
+  {id:'i13',cat:'illness',jp:'かゆい',kanji:'かゆい',romaji:'かゆい',id_:'gatal'},
+  {id:'i14',cat:'illness',jp:'きず',kanji:'傷',romaji:'きず',id_:'luka'},
+  {id:'i15',cat:'illness',jp:'くるしい',kanji:'苦しい',romaji:'くるしい',id_:'sesak / menderita'},
+  {id:'i16',cat:'illness',jp:'げり',kanji:'下痢',romaji:'げり',id_:'diare'},
+  {id:'i17',cat:'illness',jp:'こうしゅく',kanji:'拘縮',romaji:'こうしゅく',id_:'kaku sendi'},
+  {id:'i18',cat:'illness',jp:'こっせつ',kanji:'骨折',romaji:'こっせつ',id_:'patah tulang'},
+  {id:'i19',cat:'illness',jp:'しびれる',kanji:'しびれる',romaji:'しびれる',id_:'mati rasa'},
+  {id:'i20',cat:'illness',jp:'しゅっけつ',kanji:'出血',romaji:'しゅっけつ',id_:'berdarah'},
+  {id:'i21',cat:'illness',jp:'しょうじょう',kanji:'症状',romaji:'しょうじょう',id_:'gejala'},
+  {id:'i22',cat:'illness',jp:'じょくそう',kanji:'褥瘡',romaji:'じょくそう',id_:'luka baring (dekubitus)'},
+  {id:'i23',cat:'illness',jp:'せき',kanji:'咳',romaji:'せき',id_:'batuk'},
+  {id:'i24',cat:'illness',jp:'だっすい',kanji:'脱水',romaji:'だっすい',id_:'dehidrasi'},
+  {id:'i25',cat:'illness',jp:'はきけ',kanji:'吐き気',romaji:'はきけ',id_:'mual'},
+  {id:'i26',cat:'illness',jp:'はつねつ',kanji:'発熱',romaji:'はつねつ',id_:'demam'},
+  {id:'i27',cat:'illness',jp:'はっかん',kanji:'発汗',romaji:'はっかん',id_:'berkeringat'},
+  {id:'i28',cat:'illness',jp:'はれる',kanji:'はれる',romaji:'はれる',id_:'bengkak / radang'},
+  {id:'i29',cat:'illness',jp:'べんぴ',kanji:'便秘',romaji:'べんぴ',id_:'konstipasi'},
+  {id:'i30',cat:'illness',jp:'ほっさ',kanji:'発作',romaji:'ほっさ',id_:'kejang'},
+  {id:'i31',cat:'illness',jp:'むくむ',kanji:'むくむ',romaji:'むくむ',id_:'bengkak (edema)'},
+  {id:'i32',cat:'illness',jp:'めまい',kanji:'めまい',romaji:'めまい',id_:'pusing'},
+
+  // POSTURE (9)
+  {id:'p1',cat:'posture',jp:'あおむけ',kanji:'仰臥位',romaji:'あおむけ',id_:'terlentang (supinasi)'},
+  {id:'p2',cat:'posture',jp:'よこむき',kanji:'側臥位',romaji:'よこむき',id_:'miring (lateral)'},
+  {id:'p3',cat:'posture',jp:'うつぶせ',kanji:'腹臥位',romaji:'うつぶせ',id_:'tengkurap (pronasi)'},
+  {id:'p4',cat:'posture',jp:'たんざい',kanji:'端座位',romaji:'たんざい',id_:'duduk tegak lurus'},
+  {id:'p5',cat:'posture',jp:'いざい',kanji:'椅座位',romaji:'いざい',id_:'duduk kursi'},
+  {id:'p6',cat:'posture',jp:'りつい',kanji:'立位',romaji:'りつい',id_:'berdiri'},
+  {id:'p7',cat:'posture',jp:'たいい',kanji:'体位',romaji:'たいい',id_:'posisi'},
+  {id:'p8',cat:'posture',jp:'たいいへんかん',kanji:'体位変換',romaji:'たいいへんかん',id_:'mengubah posisi'},
+  {id:'p9',cat:'posture',jp:'しせい',kanji:'姿勢',romaji:'しせい',id_:'postur'},
+];
+
+const CAT_NAMES = {
+  body:'からだのぶぶん', food:'たべもの', eating:'たべるかつどう',
+  move:'いどう・もびらいぜーしょん', illness:'びょうき・しょうじょう', posture:'たいのしせい'
+};
+
+let selectedCat = 'all';
+let mode = 'jp'; // jp: show JP, pick ID | id: show ID, pick JP
+let questions = [];
+let currentIdx = 0;
+let score = 0;
+let wrongAnswers = [];
+let answered = false;
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('modeJP').classList.toggle('active', m==='jp');
+  document.getElementById('modeID').classList.toggle('active', m==='id');
+}
+
+function selectCat(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCat = cat;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function getPool() {
+  if(selectedCat==='all') return VOCAB;
+  return VOCAB.filter(v=>v.cat===selectedCat);
+}
+
+function startQuiz() {
+  const pool = getPool();
+  if(pool.length < 4) { alert('このカテゴリにはことばがたりません。'); return; }
+
+  const countVal = document.getElementById('countSelect').value;
+  const count = countVal==='all' ? pool.length : Math.min(parseInt(countVal), pool.length);
+
+  questions = shuffle(pool).slice(0, count);
+  currentIdx = 0; score = 0; wrongAnswers = [];
+
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('progressWrap').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('feedbackBar').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentIdx];
+  const total = questions.length;
+  const pool = getPool();
+
+  // progress
+  document.getElementById('qCounter').textContent = `もん ${currentIdx+1} / ${total}`;
+  document.getElementById('scoreCounter').textContent = `✅ ${score}`;
+  document.getElementById('progressFill').style.width = `${(currentIdx/total)*100}%`;
+
+  // card accent
+  const col = CAT_COLORS[q.cat] || {bg:'#FFD93D',accent:'#E0B800'};
+  document.getElementById('questionCard').style.setProperty('--q-accent', col.bg);
+  document.getElementById('catBadge').textContent = CAT_NAMES[q.cat] || q.cat;
+  document.getElementById('catBadge').style.background = col.bg;
+
+  // question
+  if(mode==='jp') {
+    // show kanji with furigana
+    document.getElementById('questionText').innerHTML = renderFuri(q.kanji, q.romaji);
+    document.getElementById('questionHint').textContent = 'インドネシアごを えらんでね';
+  } else {
+    document.getElementById('questionText').textContent = q.id_;
+    document.getElementById('questionHint').textContent = 'にほんごを えらんでね';
+  }
+
+  // options
+  const distractors = shuffle(pool.filter(v=>v.id!==q.id)).slice(0,3);
+  const opts = shuffle([q, ...distractors]);
+
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    if(mode==='jp') {
+      btn.textContent = opt.id_;
+    } else {
+      btn.innerHTML = renderFuri(opt.kanji, opt.romaji);
+    }
+    btn.onclick = () => checkAnswer(btn, opt.id===q.id, q);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('feedbackBar').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+function renderFuri(kanji, hira) {
+  // If same or no kanji (pure kana/katakana word), show as-is with hira on top
+  if(kanji === hira || !kanji) return `<ruby>${hira}<rt></rt></ruby>`;
+  return `<ruby>${kanji}<rt>${hira}</rt></ruby>`;
+}
+
+function checkAnswer(btn, isCorrect, q) {
+  if(answered) return;
+  answered = true;
+
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => { b.disabled = true; });
+
+  const fb = document.getElementById('feedbackBar');
+  if(isCorrect) {
+    btn.classList.add('correct');
+    fb.className = 'feedback-bar correct';
+    fb.textContent = '✅ せいかい！すごい！';
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    fb.className = 'feedback-bar wrong';
+    // highlight correct
+    btns.forEach(b => {
+      const txt = mode==='jp' ? b.textContent : b.innerText;
+      if(txt === q.id_ || b.innerHTML.includes(q.kanji) || b.innerHTML.includes(q.romaji)) {
+        // find correct btn
+      }
+    });
+    // Mark correct button
+    btns.forEach(b => {
+      if(mode==='jp' && b.textContent === q.id_) b.classList.add('correct');
+      if(mode==='id' && (b.innerHTML.includes(q.romaji))) b.classList.add('correct');
+    });
+    fb.textContent = `❌ まちがい！ こたえ: ${mode==='jp' ? q.id_ : q.kanji+'（'+q.romaji+'）'}`;
+    wrongAnswers.push(q);
+  }
+
+  fb.style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'block';
+  document.getElementById('scoreCounter').textContent = `✅ ${score}`;
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if(currentIdx >= questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('progressWrap').classList.add('hidden');
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('feedbackBar').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const total = questions.length;
+  const pct = score/total;
+  let emoji = '😢'; let label = 'もういちどやってみよう！'; let stars = '⭐';
+  if(pct===1){ emoji='🏆'; label='かんぺき！すばらしい！'; stars='⭐⭐⭐⭐⭐'; }
+  else if(pct>=0.8){ emoji='🎉'; label='よくできました！'; stars='⭐⭐⭐⭐'; }
+  else if(pct>=0.6){ emoji='😊'; label='いいですね！もうすこし！'; stars='⭐⭐⭐'; }
+  else if(pct>=0.4){ emoji='😅'; label='がんばって！'; stars='⭐⭐'; }
+
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultScore').textContent = `${score} / ${total}`;
+  document.getElementById('resultLabel').textContent = label;
+  document.getElementById('resultStars').textContent = stars;
+
+  const wrongList = document.getElementById('wrongList');
+  const wrongItems = document.getElementById('wrongItems');
+  wrongItems.innerHTML = '';
+  if(wrongAnswers.length > 0) {
+    wrongAnswers.forEach(w => {
+      const div = document.createElement('div');
+      div.className = 'wrong-item';
+      div.innerHTML = `<div class="q-label">${CAT_NAMES[w.cat]}</div>
+        <div style="font-size:1rem">${w.kanji} <span style="color:#9A8B5A;font-size:0.8em">（${w.romaji}）</span></div>
+        <div class="correct-ans">= ${w.id_}</div>`;
+      wrongItems.appendChild(div);
+    });
+    wrongList.classList.remove('hidden');
+  } else {
+    wrongList.classList.add('hidden');
+  }
+
+  document.getElementById('resultScreen').style.display = 'block';
+}
+
+function restartQuiz() {
+  startQuiz();
+}
+
+function backToMenu() {
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('progressWrap').classList.add('hidden');
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('feedbackBar').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('welcomeScreen').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
