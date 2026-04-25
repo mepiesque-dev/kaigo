@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaigo Quiz - 介護日本語</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Saira+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background: #0f1117;
+    color: #f0f0f0;
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide-in { animation: slideIn 0.3s ease; }
+
+  /* MENU */
+  #screen-menu { padding: 20px 16px 40px; }
+  .menu-inner { max-width: 480px; margin: 0 auto; }
+  .menu-title-sub { font-size: 13px; letter-spacing: 4px; color: #4fc3f7; text-transform: uppercase; margin-bottom: 6px; font-family: 'Saira Condensed', sans-serif; text-align: center; }
+  h1.menu-title { font-size: 32px; font-weight: 900; font-family: 'Saira Condensed', sans-serif; letter-spacing: 1px; text-align: center; }
+  .menu-subtitle { color: #888; font-size: 13px; margin-top: 6px; text-align: center; }
+  .section-label { font-size: 12px; color: #888; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; font-family: 'Saira Condensed', sans-serif; }
+  .section-block { margin-bottom: 20px; }
+
+  .btn-mode {
+    background: #1a1d27; border: 2px solid #2a2d3a; border-radius: 12px;
+    color: #ccc; padding: 12px 16px; cursor: pointer; transition: all 0.18s;
+    width: 100%; text-align: left; display: flex; align-items: center;
+    gap: 10px; font-size: 15px; font-family: inherit; margin-bottom: 8px;
+  }
+  .btn-mode.active { border-color: #4fc3f7; background: #142233; color: #4fc3f7; }
+  .btn-mode:hover { border-color: #555; }
+  .btn-mode .check { margin-left: auto; font-size: 18px; display: none; }
+  .btn-mode.active .check { display: inline; }
+
+  .kat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .kat-actions { display: flex; gap: 8px; align-items: center; }
+  .kat-link { background: none; border: none; font-size: 11px; cursor: pointer; padding: 0; font-family: inherit; }
+  .kat-link.blue { color: #4fc3f7; }
+  .kat-link.grey { color: #888; }
+  .kat-sep { color: #444; }
+
+  .kat-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 99px; font-size: 12px;
+    cursor: pointer; border: 1.5px solid; transition: all 0.15s;
+    font-family: inherit; margin: 3px; background: transparent;
+  }
+  .kat-count-text { margin-top: 8px; font-size: 12px; color: #666; }
+
+  .furi-toggle-row {
+    background: #1a1d27; border-radius: 12px; padding: 12px 16px;
+    margin-bottom: 4px; display: flex; align-items: center; gap: 10px;
+  }
+  .furi-icon { font-size: 20px; }
+  .furi-label { flex: 1; font-size: 13px; color: #aaa; }
+  .toggle-track {
+    width: 44px; height: 24px; border-radius: 12px; background: #333;
+    cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0;
+  }
+  .toggle-track.on { background: #4fc3f7; }
+  .toggle-thumb {
+    width: 20px; height: 20px; border-radius: 50%; background: #fff;
+    position: absolute; top: 2px; left: 2px; transition: left 0.2s;
+  }
+  .toggle-track.on .toggle-thumb { left: 22px; }
+
+  .start-btn {
+    background: linear-gradient(135deg, #4fc3f7, #0288d1); color: #000;
+    border: none; border-radius: 14px; padding: 16px 0; font-size: 18px;
+    font-weight: 900; font-family: 'Saira Condensed', sans-serif;
+    letter-spacing: 1px; cursor: pointer; width: 100%; margin-top: 24px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,195,247,0.35); }
+  .start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* QUIZ */
+  #screen-quiz { display: flex; flex-direction: column; min-height: 100vh; }
+  .quiz-header { padding: 16px 16px 0; max-width: 480px; margin: 0 auto; width: 100%; }
+  .quiz-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .back-arrow { background: none; border: none; color: #888; cursor: pointer; font-size: 22px; padding: 0; font-family: inherit; }
+  .quiz-counter { font-family: 'Saira Condensed', sans-serif; font-size: 20px; font-weight: 700; color: #4fc3f7; }
+  .quiz-counter span { color: #444; }
+  .quiz-score { font-family: 'Saira Condensed', sans-serif; font-size: 16px; color: #4caf50; }
+  .progress-bar { height: 4px; background: #1e2130; border-radius: 2px; margin-bottom: 16px; }
+  .progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+  .quiz-card { flex: 1; padding: 0 16px 24px; max-width: 480px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 16px; }
+  .kategori-badge { display: inline-flex; align-self: flex-start; border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 700; }
+  .question-box { background: #1a1d27; border-radius: 20px; padding: 24px 20px; text-align: center; }
+  .question-type { font-size: 12px; color: #888; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; font-family: 'Saira Condensed', sans-serif; }
+  .question-prompt { font-weight: 900; line-height: 1.3; }
+  .question-furigana { font-size: 14px; color: #aaa; margin-top: 4px; }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; }
+  .opt-btn {
+    background: #1a1d27; border: 2px solid #252836; border-radius: 14px;
+    color: #e0e0e0; padding: 14px 16px; cursor: pointer; width: 100%;
+    text-align: left; font-size: 14px; font-family: inherit; transition: all 0.15s;
+    line-height: 1.4; display: flex; align-items: center; gap: 10px;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: #4fc3f7; }
+  .opt-btn.correct { border-color: #4caf50; background: #0d2b1d; color: #4caf50; }
+  .opt-btn.wrong { border-color: #f44336; background: #2b0d0d; color: #f44336; }
+  .opt-prefix {
+    min-width: 28px; height: 28px; border-radius: 8px; background: #252836;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #aaa;
+    font-family: 'Saira Condensed', sans-serif; flex-shrink: 0;
+  }
+  .opt-btn.correct .opt-prefix { background: #4caf50; color: #fff; }
+  .opt-btn.wrong .opt-prefix { background: #f44336; color: #fff; }
+
+  .feedback-box { border-radius: 12px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .feedback-box.correct { background: #0d2b1d; }
+  .feedback-box.wrong { background: #2b0d0d; }
+  .feedback-emoji { font-size: 24px; }
+  .feedback-title { font-weight: 700; font-size: 14px; }
+  .feedback-title.correct { color: #4caf50; }
+  .feedback-title.wrong { color: #f44336; }
+  .feedback-answer { font-size: 13px; color: #aaa; margin-top: 2px; }
+  .feedback-answer strong { color: #4caf50; }
+  .feedback-reading { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .next-btn {
+    background: linear-gradient(135deg, #4fc3f7, #0288d1); color: #000;
+    border: none; border-radius: 14px; padding: 16px 0; font-size: 17px;
+    font-weight: 900; font-family: 'Saira Condensed', sans-serif;
+    letter-spacing: 1px; cursor: pointer; width: 100%;
+  }
+
+  /* RESULT */
+  #screen-result { padding: 20px 16px 60px; }
+  .result-inner { max-width: 480px; margin: 0 auto; }
+  .result-header { text-align: center; padding: 32px 0 24px; }
+  .result-emoji { font-size: 64px; }
+  .result-score { font-family: 'Saira Condensed', sans-serif; font-size: 48px; font-weight: 900; color: #4fc3f7; line-height: 1; }
+  .result-score span { color: #555; }
+  .result-pct { color: #888; font-size: 14px; margin-top: 4px; }
+  .recap-box { background: #1a1d27; border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+  .recap-label { font-size: 12px; color: #888; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; font-family: 'Saira Condensed', sans-serif; }
+  .res-row { padding: 10px 0; border-bottom: 1px solid #1e2130; }
+  .res-row:last-child { border-bottom: none; }
+  .res-row-inner { display: flex; justify-content: space-between; align-items: flex-start; }
+  .res-left { flex: 1; }
+  .res-kat-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
+  .res-prompt { font-weight: 700; font-size: 15px; margin-top: 2px; }
+  .res-furigana { font-size: 11px; color: #888; }
+  .res-chosen { font-size: 12px; margin-top: 4px; }
+  .res-chosen.correct-ans { color: #4caf50; }
+  .res-chosen.wrong-ans { color: #f44336; }
+  .res-correct-ans { font-size: 12px; color: #4caf50; }
+  .res-emoji { font-size: 20px; margin-left: 8px; }
+
+  .retry-btn {
+    background: linear-gradient(135deg, #4fc3f7, #0288d1); color: #000;
+    border: none; border-radius: 14px; padding: 16px 0; font-size: 18px;
+    font-weight: 900; font-family: 'Saira Condensed', sans-serif;
+    letter-spacing: 1px; cursor: pointer; width: 100%; margin-top: 12px;
+  }
+  .back-btn {
+    background: #1a1d27; border: 2px solid #2a2d3a; border-radius: 12px;
+    color: #ccc; padding: 14px 0; font-size: 15px; cursor: pointer;
+    width: 100%; font-family: inherit; margin-top: 12px;
+  }
+  .back-btn:hover { border-color: #4fc3f7; color: #4fc3f7; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- MENU SCREEN -->
+<div id="screen-menu">
+  <div class="menu-inner">
+    <div class="menu-title-sub">介護日本語</div>
+    <h1 class="menu-title">KAIGO QUIZ</h1>
+    <p class="menu-subtitle" id="vocab-count-text"></p>
+
+    <div class="section-block" style="margin-top:28px">
+      <div class="section-label">Mode Soal</div>
+      <div id="mode-list"></div>
+    </div>
+
+    <div class="section-block">
+      <div class="kat-header">
+        <div class="section-label" style="margin-bottom:0">Kategori</div>
+        <div class="kat-actions">
+          <button class="kat-link blue" onclick="selectAllKategori()">Semua</button>
+          <span class="kat-sep">|</span>
+          <button class="kat-link grey" onclick="resetKategori()">Reset</button>
+        </div>
+      </div>
+      <div id="kat-chips"></div>
+      <div class="kat-count-text" id="kat-count"></div>
+    </div>
+
+    <div class="furi-toggle-row">
+      <span class="furi-icon">ふ</span>
+      <span class="furi-label">Tampilkan furigana saat soal</span>
+      <div class="toggle-track on" id="furi-toggle" onclick="toggleFuri()">
+        <div class="toggle-thumb"></div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startQuiz()">MULAI KUIS</button>
+  </div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="screen-quiz" class="hidden">
+  <div class="quiz-header">
+    <div class="quiz-header-row">
+      <button class="back-arrow" onclick="goToMenu()">←</button>
+      <div class="quiz-counter" id="quiz-counter">1 <span>/ 0</span></div>
+      <div class="quiz-score" id="quiz-score">✓ 0</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+  <div class="quiz-card slide-in" id="quiz-card">
+    <div class="kategori-badge" id="kat-badge"></div>
+    <div class="question-box" id="question-box">
+      <div class="question-type" id="question-type"></div>
+      <div class="question-prompt" id="question-prompt"></div>
+      <div class="question-furigana hidden" id="question-furigana"></div>
+    </div>
+    <div class="options-list" id="options-list"></div>
+    <div id="feedback-area" class="hidden slide-in"></div>
+  </div>
+</div>
+
+<!-- RESULT SCREEN -->
+<div id="screen-result" class="hidden">
+  <div class="result-inner">
+    <div class="result-header">
+      <div class="result-emoji" id="result-emoji">🎉</div>
+      <div class="result-score" id="result-score">0<span>/0</span></div>
+      <div class="result-pct" id="result-pct">0% benar</div>
+    </div>
+    <div class="recap-box">
+      <div class="recap-label">Rekap Jawaban</div>
+      <div id="recap-list"></div>
+    </div>
+    <button class="retry-btn" onclick="retryQuiz()">ULANGI KUIS</button>
+    <button class="back-btn" onclick="goToMenu()">← Kembali ke Menu</button>
+  </div>
+</div>
+
+<script>
+const ALL_VOCAB = [
+  { kanji: "頭", reading: "あたま", arti: "kepala", kategori: "Bagian Tubuh" },
+  { kanji: "額", reading: "ひたい", arti: "dahi", kategori: "Bagian Tubuh" },
+  { kanji: "目", reading: "め", arti: "mata", kategori: "Bagian Tubuh" },
+  { kanji: "目頭", reading: "めがしら", arti: "sudut bagian dalam mata", kategori: "Bagian Tubuh" },
+  { kanji: "目尻", reading: "めじり", arti: "sudut bagian luar mata", kategori: "Bagian Tubuh" },
+  { kanji: "耳", reading: "みみ", arti: "telinga", kategori: "Bagian Tubuh" },
+  { kanji: "鼻", reading: "はな", arti: "hidung", kategori: "Bagian Tubuh" },
+  { kanji: "口", reading: "くち", arti: "mulut", kategori: "Bagian Tubuh" },
+  { kanji: "唇", reading: "くちびる", arti: "bibir", kategori: "Bagian Tubuh" },
+  { kanji: "顎", reading: "あご", arti: "dagu", kategori: "Bagian Tubuh" },
+  { kanji: "首", reading: "くび", arti: "leher", kategori: "Bagian Tubuh" },
+  { kanji: "喉", reading: "のど", arti: "tenggorokan", kategori: "Bagian Tubuh" },
+  { kanji: "脇", reading: "わき", arti: "ketiak", kategori: "Bagian Tubuh" },
+  { kanji: "腕", reading: "うで", arti: "lengan", kategori: "Bagian Tubuh" },
+  { kanji: "肘", reading: "ひじ", arti: "siku", kategori: "Bagian Tubuh" },
+  { kanji: "腰", reading: "こし", arti: "pinggang", kategori: "Bagian Tubuh" },
+  { kanji: "手首", reading: "てくび", arti: "pergelangan tangan", kategori: "Bagian Tubuh" },
+  { kanji: "手のひら", reading: "てのひら", arti: "telapak tangan", kategori: "Bagian Tubuh" },
+  { kanji: "指", reading: "ゆび", arti: "jari", kategori: "Bagian Tubuh" },
+  { kanji: "指先", reading: "ゆびさき", arti: "ujung jari", kategori: "Bagian Tubuh" },
+  { kanji: "手の甲", reading: "てのこう", arti: "punggung tangan", kategori: "Bagian Tubuh" },
+  { kanji: "足首", reading: "あしくび", arti: "pergelangan kaki", kategori: "Bagian Tubuh" },
+  { kanji: "つま先", reading: "つまさき", arti: "ujung jari kaki", kategori: "Bagian Tubuh" },
+  { kanji: "肩", reading: "かた", arti: "bahu", kategori: "Bagian Tubuh" },
+  { kanji: "背中", reading: "せなか", arti: "punggung", kategori: "Bagian Tubuh" },
+  { kanji: "胸", reading: "むね", arti: "dada", kategori: "Bagian Tubuh" },
+  { kanji: "臀部／尻", reading: "でんぶ / しり", arti: "pantat", kategori: "Bagian Tubuh" },
+  { kanji: "腹", reading: "はら", arti: "perut", kategori: "Bagian Tubuh" },
+  { kanji: "膝", reading: "ひざ", arti: "lutut", kategori: "Bagian Tubuh" },
+  { kanji: "踵", reading: "かかと", arti: "tumit", kategori: "Bagian Tubuh" },
+  { kanji: "足底／足の裏", reading: "そくてい / あしのうら", arti: "telapak kaki", kategori: "Bagian Tubuh" },
+  { kanji: "顔色", reading: "かおいろ", arti: "air muka", kategori: "Bagian Tubuh" },
+  { kanji: "患側", reading: "かんそく", arti: "sisi sakit", kategori: "Bagian Tubuh" },
+  { kanji: "健側", reading: "けんそく", arti: "sisi sehat", kategori: "Bagian Tubuh" },
+  { kanji: "健康", reading: "けんこう", arti: "kesehatan", kategori: "Bagian Tubuh" },
+  { kanji: "体調", reading: "たいちょう", arti: "kondisi fisik", kategori: "Bagian Tubuh" },
+  { kanji: "バイタルサイン", reading: "ばいたるさいん", arti: "tanda-tanda vital", kategori: "Bagian Tubuh" },
+  { kanji: "あげもの", reading: "あげもの", arti: "gorengan", kategori: "Makanan & Minuman" },
+  { kanji: "いためもの", reading: "いためもの", arti: "tumis", kategori: "Makanan & Minuman" },
+  { kanji: "おやつ", reading: "おやつ", arti: "camilan", kategori: "Makanan & Minuman" },
+  { kanji: "粥／お粥", reading: "かゆ / おかゆ", arti: "bubur", kategori: "Makanan & Minuman" },
+  { kanji: "カレーライス", reading: "かれえらいす", arti: "nasi kari", kategori: "Makanan & Minuman" },
+  { kanji: "献立", reading: "こんだて", arti: "daftar makanan", kategori: "Makanan & Minuman" },
+  { kanji: "献立表", reading: "こんだてひょう", arti: "tabel daftar makanan", kategori: "Makanan & Minuman" },
+  { kanji: "主食", reading: "しゅしょく", arti: "makanan pokok", kategori: "Makanan & Minuman" },
+  { kanji: "汁物", reading: "しるもの", arti: "sup", kategori: "Makanan & Minuman" },
+  { kanji: "ゼリー", reading: "ぜりい", arti: "jeli", kategori: "Makanan & Minuman" },
+  { kanji: "たまご焼き", reading: "たまごやき", arti: "telur goreng", kategori: "Makanan & Minuman" },
+  { kanji: "漬物", reading: "つけもの", arti: "acar", kategori: "Makanan & Minuman" },
+  { kanji: "天ぷら", reading: "てんぷら", arti: "tempura", kategori: "Makanan & Minuman" },
+  { kanji: "豆腐", reading: "とうふ", arti: "tahu", kategori: "Makanan & Minuman" },
+  { kanji: "丼", reading: "どんぶり", arti: "mangkuk", kategori: "Makanan & Minuman" },
+  { kanji: "煮付け", reading: "につけ", arti: "rebus berbumbu / semur", kategori: "Makanan & Minuman" },
+  { kanji: "煮物", reading: "にもの", arti: "rebusan", kategori: "Makanan & Minuman" },
+  { kanji: "ハンバーグ", reading: "はんばあぐ", arti: "daging hamburger", kategori: "Makanan & Minuman" },
+  { kanji: "副食", reading: "ふくしょく", arti: "lauk", kategori: "Makanan & Minuman" },
+  { kanji: "プリン", reading: "ぷりん", arti: "puding", kategori: "Makanan & Minuman" },
+  { kanji: "麦茶", reading: "むぎちゃ", arti: "teh gandum", kategori: "Makanan & Minuman" },
+  { kanji: "メニュー", reading: "めにゅう", arti: "menu", kategori: "Makanan & Minuman" },
+  { kanji: "焼き魚", reading: "やきざかな", arti: "ikan bakar", kategori: "Makanan & Minuman" },
+  { kanji: "ヨーグルト", reading: "よおぐると", arti: "yoghurt", kategori: "Makanan & Minuman" },
+  { kanji: "温める", reading: "あたためる", arti: "menghangatkan", kategori: "Perawatan Makan" },
+  { kanji: "エプロン", reading: "えぷろん", arti: "celemek", kategori: "Perawatan Makan" },
+  { kanji: "嚥下", reading: "えんげ", arti: "menelan", kategori: "Perawatan Makan" },
+  { kanji: "きざむ", reading: "きざむ", arti: "memotong", kategori: "Perawatan Makan" },
+  { kanji: "誤嚥", reading: "ごえん", arti: "tersedak paru (aspirasi)", kategori: "Perawatan Makan" },
+  { kanji: "こぼす", reading: "こぼす", arti: "menumpahkan", kategori: "Perawatan Makan" },
+  { kanji: "食器を下げる", reading: "さげる", arti: "membereskan (alat makan)", kategori: "Perawatan Makan" },
+  { kanji: "冷ます", reading: "さます", arti: "mendinginkan", kategori: "Perawatan Makan" },
+  { kanji: "食品", reading: "しょくひん", arti: "makanan", kategori: "Perawatan Makan" },
+  { kanji: "食欲", reading: "しょくよく", arti: "nafsu makan", kategori: "Perawatan Makan" },
+  { kanji: "水分補給", reading: "すいぶんほきゅう", arti: "asupan cairan", kategori: "Perawatan Makan" },
+  { kanji: "咳込む", reading: "せきこむ", arti: "batuk", kategori: "Perawatan Makan" },
+  { kanji: "とろみ粉", reading: "とろみこ", arti: "bubuk pengental", kategori: "Perawatan Makan" },
+  { kanji: "とろみをつける", reading: "つける", arti: "mengentalkan", kategori: "Perawatan Makan" },
+  { kanji: "飲み込む", reading: "のみこむ", arti: "menelan", kategori: "Perawatan Makan" },
+  { kanji: "一口大", reading: "ひとくちだい", arti: "ukuran satu gigitan", kategori: "Perawatan Makan" },
+  { kanji: "むせる", reading: "むせる", arti: "tersedak", kategori: "Perawatan Makan" },
+  { kanji: "量", reading: "りょう", arti: "jumlah", kategori: "Perawatan Makan" },
+  { kanji: "移乗", reading: "いじょう", arti: "beralih", kategori: "Berpindah & Posisi" },
+  { kanji: "移動", reading: "いどう", arti: "berpindah", kategori: "Berpindah & Posisi" },
+  { kanji: "移動用リフト", reading: "いどうようりふと", arti: "alat pemindah", kategori: "Berpindah & Posisi" },
+  { kanji: "起き上がる", reading: "おきあがる", arti: "bangkit", kategori: "Berpindah & Posisi" },
+  { kanji: "ブレーキをかける", reading: "かける", arti: "mengerem", kategori: "Berpindah & Posisi" },
+  { kanji: "臥床", reading: "がしょう", arti: "berbaring", kategori: "Berpindah & Posisi" },
+  { kanji: "車いす", reading: "くるまいす", arti: "kursi roda", kategori: "Berpindah & Posisi" },
+  { kanji: "声かけ", reading: "こえかけ", arti: "sapaan / interaksi", kategori: "Berpindah & Posisi" },
+  { kanji: "支える", reading: "ささえる", arti: "menopang", kategori: "Berpindah & Posisi" },
+  { kanji: "シルバーカー", reading: "しるばあかあ", arti: "troli lansia", kategori: "Berpindah & Posisi" },
+  { kanji: "すべる", reading: "すべる", arti: "tergelincir", kategori: "Berpindah & Posisi" },
+  { kanji: "スライディングシート", reading: "すらいぢんぐしいと", arti: "kursi geser", kategori: "Berpindah & Posisi" },
+  { kanji: "杖", reading: "つえ", arti: "tongkat", kategori: "Berpindah & Posisi" },
+  { kanji: "杖をつく", reading: "つく", arti: "memakai (tongkat)", kategori: "Berpindah & Posisi" },
+  { kanji: "つかまる", reading: "つかまる", arti: "berpegangan", kategori: "Berpindah & Posisi" },
+  { kanji: "手すり", reading: "てすり", arti: "handrail (pegangan)", kategori: "Berpindah & Posisi" },
+  { kanji: "握る", reading: "にぎる", arti: "mencengkeram", kategori: "Berpindah & Posisi" },
+  { kanji: "寝返り", reading: "ねがえり", arti: "membalik badan", kategori: "Berpindah & Posisi" },
+  { kanji: "白杖", reading: "はくじょう", arti: "tongkat putih", kategori: "Berpindah & Posisi" },
+  { kanji: "ブレーキ", reading: "ぶれえき", arti: "rem", kategori: "Berpindah & Posisi" },
+  { kanji: "歩行器", reading: "ほこうき", arti: "alat bantu jalan", kategori: "Berpindah & Posisi" },
+  { kanji: "前屈み", reading: "まえかがみ", arti: "membungkuk", kategori: "Berpindah & Posisi" },
+  { kanji: "誘導", reading: "ゆうどう", arti: "panduan", kategori: "Berpindah & Posisi" },
+  { kanji: "離床", reading: "りしょう", arti: "beranjak dari tempat tidur", kategori: "Berpindah & Posisi" },
+  { kanji: "仰臥位／あおむけ", reading: "ぎょうがい / あおむけ", arti: "terlentang", kategori: "Berpindah & Posisi" },
+  { kanji: "側臥位／よこむき", reading: "そくがい / よこむき", arti: "miring", kategori: "Berpindah & Posisi" },
+  { kanji: "腹臥位／うつぶせ", reading: "ふくがい / うつぶせ", arti: "tengkurap", kategori: "Berpindah & Posisi" },
+  { kanji: "端座位", reading: "たんざい", arti: "duduk tegak lurus", kategori: "Berpindah & Posisi" },
+  { kanji: "椅座位", reading: "いざい", arti: "duduk kursi", kategori: "Berpindah & Posisi" },
+  { kanji: "立位", reading: "りつい", arti: "berdiri", kategori: "Berpindah & Posisi" },
+  { kanji: "体位変換", reading: "たいいへんかん", arti: "mengubah posisi", kategori: "Berpindah & Posisi" },
+  { kanji: "疥癬", reading: "かいせん", arti: "skabies", kategori: "Penyakit & Gejala" },
+  { kanji: "風邪", reading: "かぜ", arti: "masuk angin / flu", kategori: "Penyakit & Gejala" },
+  { kanji: "高血圧症", reading: "こうけつあつしょう", arti: "hipertensi", kategori: "Penyakit & Gejala" },
+  { kanji: "食中毒", reading: "しょくちゅうどく", arti: "keracunan makanan", kategori: "Penyakit & Gejala" },
+  { kanji: "認知症", reading: "にんちしょう", arti: "demensia", kategori: "Penyakit & Gejala" },
+  { kanji: "熱中症", reading: "ねっちゅうしょう", arti: "heatstroke", kategori: "Penyakit & Gejala" },
+  { kanji: "肺炎", reading: "はいえん", arti: "pneumonia", kategori: "Penyakit & Gejala" },
+  { kanji: "白内障", reading: "はくないしょう", arti: "katarak", kategori: "Penyakit & Gejala" },
+  { kanji: "アレルギー", reading: "あれるぎい", arti: "alergi", kategori: "Penyakit & Gejala" },
+  { kanji: "痛い", reading: "いたい", arti: "sakit / nyeri", kategori: "Penyakit & Gejala" },
+  { kanji: "嘔吐", reading: "おうと", arti: "muntah", kategori: "Penyakit & Gejala" },
+  { kanji: "片麻痺", reading: "かたまひ", arti: "lumpuh sebelah", kategori: "Penyakit & Gejala" },
+  { kanji: "かゆい", reading: "かゆい", arti: "gatal", kategori: "Penyakit & Gejala" },
+  { kanji: "傷", reading: "きず", arti: "luka", kategori: "Penyakit & Gejala" },
+  { kanji: "苦しい", reading: "くるしい", arti: "sesak / menderita", kategori: "Penyakit & Gejala" },
+  { kanji: "下痢", reading: "げり", arti: "diare", kategori: "Penyakit & Gejala" },
+  { kanji: "拘縮", reading: "こうしゅく", arti: "kaku sendi", kategori: "Penyakit & Gejala" },
+  { kanji: "骨折", reading: "こっせつ", arti: "patah tulang", kategori: "Penyakit & Gejala" },
+  { kanji: "しびれる", reading: "しびれる", arti: "mati rasa", kategori: "Penyakit & Gejala" },
+  { kanji: "出血", reading: "しゅっけつ", arti: "berdarah", kategori: "Penyakit & Gejala" },
+  { kanji: "症状", reading: "しょうじょう", arti: "gejala", kategori: "Penyakit & Gejala" },
+  { kanji: "褥瘡", reading: "じょくそう", arti: "luka baring (dekubitus)", kategori: "Penyakit & Gejala" },
+  { kanji: "咳", reading: "せき", arti: "batuk", kategori: "Penyakit & Gejala" },
+  { kanji: "脱水", reading: "だっすい", arti: "dehidrasi", kategori: "Penyakit & Gejala" },
+  { kanji: "吐き気", reading: "はきけ", arti: "mual", kategori: "Penyakit & Gejala" },
+  { kanji: "発熱", reading: "はつねつ", arti: "demam", kategori: "Penyakit & Gejala" },
+  { kanji: "発汗", reading: "はっかん", arti: "berkeringat", kategori: "Penyakit & Gejala" },
+  { kanji: "はれる", reading: "はれる", arti: "bengkak / radang", kategori: "Penyakit & Gejala" },
+  { kanji: "便秘", reading: "べんぴ", arti: "konstipasi", kategori: "Penyakit & Gejala" },
+  { kanji: "発作", reading: "ほっさ", arti: "kejang", kategori: "Penyakit & Gejala" },
+  { kanji: "むくむ", reading: "むくむ", arti: "bengkak (edema)", kategori: "Penyakit & Gejala" },
+  { kanji: "めまい", reading: "めまい", arti: "pusing", kategori: "Penyakit & Gejala" },
+  { kanji: "ズボンを上げる", reading: "あげる", arti: "memakai (celana)", kategori: "Buang Air (Toilet)" },
+  { kanji: "足元", reading: "あしもと", arti: "kaki", kategori: "Buang Air (Toilet)" },
+  { kanji: "陰部", reading: "いんぶ", arti: "area genital", kategori: "Buang Air (Toilet)" },
+  { kanji: "おむつ", reading: "おむつ", arti: "popok", kategori: "Buang Air (Toilet)" },
+  { kanji: "浣腸", reading: "かんちょう", arti: "enema", kategori: "Buang Air (Toilet)" },
+  { kanji: "着替える", reading: "きがえる", arti: "berganti pakaian", kategori: "Buang Air (Toilet)" },
+  { kanji: "ズボンを下げる", reading: "さげる", arti: "menurunkan celana", kategori: "Buang Air (Toilet)" },
+  { kanji: "失禁", reading: "しっきん", arti: "inkontinensia", kategori: "Buang Air (Toilet)" },
+  { kanji: "羞恥心", reading: "しゅうちしん", arti: "rasa malu", kategori: "Buang Air (Toilet)" },
+  { kanji: "使い捨て手袋", reading: "つかいすててぶくろ", arti: "sarung tangan sekali pakai", kategori: "Buang Air (Toilet)" },
+  { kanji: "尿", reading: "にょう", arti: "urine", kategori: "Buang Air (Toilet)" },
+  { kanji: "尿器", reading: "にょうき", arti: "perkemihan (wadah urine)", kategori: "Buang Air (Toilet)" },
+  { kanji: "尿意", reading: "にょうい", arti: "keinginan berkemih", kategori: "Buang Air (Toilet)" },
+  { kanji: "排泄", reading: "はいせつ", arti: "ekskresi", kategori: "Buang Air (Toilet)" },
+  { kanji: "便", reading: "べん", arti: "feses", kategori: "Buang Air (Toilet)" },
+  { kanji: "便意", reading: "べん-い", arti: "keinginan defekasi", kategori: "Buang Air (Toilet)" },
+  { kanji: "便座", reading: "べんざ", arti: "toilet duduk", kategori: "Buang Air (Toilet)" },
+  { kanji: "ポータブルトイレ", reading: "ぽおたぶるといれ", arti: "toilet portabel", kategori: "Buang Air (Toilet)" },
+  { kanji: "衣類", reading: "いるい", arti: "pakaian", kategori: "Kebersihan Diri" },
+  { kanji: "入れ歯／義歯", reading: "いれば / ぎし", arti: "gigi tiruan / palsu", kategori: "Kebersihan Diri" },
+  { kanji: "うがい", reading: "うがい", arti: "berkumur", kategori: "Kebersihan Diri" },
+  { kanji: "上着", reading: "うわぎ", arti: "baju atasan", kategori: "Kebersihan Diri" },
+  { kanji: "起床", reading: "きしょう", arti: "bangun tidur", kategori: "Kebersihan Diri" },
+  { kanji: "くし", reading: "くし", arti: "sisir", kategori: "Kebersihan Diri" },
+  { kanji: "更衣", reading: "こうい", arti: "berganti pakaian", kategori: "Kebersihan Diri" },
+  { kanji: "口腔ケア", reading: "こうくうけあ", arti: "perawatan rongga mulut", kategori: "Kebersihan Diri" },
+  { kanji: "下着", reading: "したぎ", arti: "pakaian dalam", kategori: "Kebersihan Diri" },
+  { kanji: "スカート", reading: "すかあと", arti: "rok", kategori: "Kebersihan Diri" },
+  { kanji: "爪きり", reading: "つめきり", arti: "gunting kuku", kategori: "Kebersihan Diri" },
+  { kanji: "髪をとかす", reading: "とかす", arti: "menyisir (rambut)", kategori: "Kebersihan Diri" },
+  { kanji: "ドライヤー", reading: "どらいやあ", arti: "pengering rambut", kategori: "Kebersihan Diri" },
+  { kanji: "ねまき", reading: "ねまき", arti: "pakaian tidur", kategori: "Kebersihan Diri" },
+  { kanji: "歯ブラシ", reading: "はぶらし", arti: "sikat gigi", kategori: "Kebersihan Diri" },
+  { kanji: "歯磨き", reading: "はみがき", arti: "pasta gigi", kategori: "Kebersihan Diri" },
+  { kanji: "パンツ", reading: "ぱんつ", arti: "celana dalam", kategori: "Kebersihan Diri" },
+  { kanji: "ひげ剃り", reading: "ひげそり", arti: "pisau cukur", kategori: "Kebersihan Diri" },
+  { kanji: "みじたく", reading: "みじたく", arti: "merapikan diri", kategori: "Kebersihan Diri" },
+  { kanji: "口をゆすぐ", reading: "ゆすぐ", arti: "membilas (mulut)", kategori: "Kebersihan Diri" },
+  { kanji: "温度", reading: "おんど", arti: "suhu", kategori: "Mandi & Kebersihan" },
+  { kanji: "お湯をかける", reading: "かける", arti: "menuangkan (air hangat)", kategori: "Mandi & Kebersihan" },
+  { kanji: "汗をかく", reading: "かく", arti: "berkeringat", kategori: "Mandi & Kebersihan" },
+  { kanji: "シャンプー", reading: "しゃんぷう", arti: "sampo", kategori: "Mandi & Kebersihan" },
+  { kanji: "消毒液", reading: "しょうどくえき", arti: "larutan antiseptik", kategori: "Mandi & Kebersihan" },
+  { kanji: "清潔保持", reading: "せいけつほじ", arti: "menjaga kebersihan tubuh", kategori: "Mandi & Kebersihan" },
+  { kanji: "清拭", reading: "せいしき", arti: "mandi seka", kategori: "Mandi & Kebersihan" },
+  { kanji: "洗髪", reading: "せんぱつ", arti: "keramas", kategori: "Mandi & Kebersihan" },
+  { kanji: "洗面器", reading: "せんめんき", arti: "cuci muka (baskom)", kategori: "Mandi & Kebersihan" },
+  { kanji: "脱衣室", reading: "だついしつ", arti: "ruang ganti pakaian", kategori: "Mandi & Kebersihan" },
+  { kanji: "入浴", reading: "にゅうよく", arti: "mandi", kategori: "Mandi & Kebersihan" },
+  { kanji: "ぬるい", reading: "ぬるい", arti: "suam-suam kuku", kategori: "Mandi & Kebersihan" },
+  { kanji: "拭く", reading: "ふく", arti: "menyeka", kategori: "Mandi & Kebersihan" },
+  { kanji: "浴室", reading: "よくしつ", arti: "kamar mandi", kategori: "Mandi & Kebersihan" },
+  { kanji: "浴槽", reading: "よくそう", arti: "bak mandi", kategori: "Mandi & Kebersihan" },
+  { kanji: "リンス", reading: "りんす", arti: "kondisioner", kategori: "Mandi & Kebersihan" },
+  { kanji: "おしぼり", reading: "おしぼり", arti: "lap tangan basah", kategori: "Urusan Rumah" },
+  { kanji: "カーテン", reading: "かあてん", arti: "tirai", kategori: "Urusan Rumah" },
+  { kanji: "家事", reading: "かじ", arti: "pekerjaan rumah", kategori: "Urusan Rumah" },
+  { kanji: "片付ける", reading: "かたずける", arti: "membereskan", kategori: "Urusan Rumah" },
+  { kanji: "乾かす", reading: "かわかす", arti: "mengeringkan", kategori: "Urusan Rumah" },
+  { kanji: "換気", reading: "かんき", arti: "pergantian udara", kategori: "Urusan Rumah" },
+  { kanji: "シーツ", reading: "しいつ", arti: "lembaran (seprai)", kategori: "Urusan Rumah" },
+  { kanji: "洗濯物", reading: "せんたくもの", arti: "cucian", kategori: "Urusan Rumah" },
+  { kanji: "掃除機", reading: "そうじき", arti: "penyedot debu", kategori: "Urusan Rumah" },
+  { kanji: "たたむ", reading: "たたむ", arti: "melipat", kategori: "Urusan Rumah" },
+  { kanji: "調理", reading: "ちょうり", arti: "memasak", kategori: "Urusan Rumah" },
+  { kanji: "掃く", reading: "はく", arti: "menyapu", kategori: "Urusan Rumah" },
+  { kanji: "布団", reading: "ふとん", arti: "kasur", kategori: "Urusan Rumah" },
+  { kanji: "ほうき", reading: "ほうき", arti: "sapu", kategori: "Urusan Rumah" },
+  { kanji: "干す", reading: "ほす", arti: "menjemur", kategori: "Urusan Rumah" },
+  { kanji: "枕", reading: "まくら", arti: "bantal", kategori: "Urusan Rumah" },
+  { kanji: "毛布", reading: "もうふ", arti: "selimut", kategori: "Urusan Rumah" },
+  { kanji: "モップ", reading: "もっぷ", arti: "alat pel", kategori: "Urusan Rumah" },
+  { kanji: "観察", reading: "かんさつ", arti: "mengamati, observasi", kategori: "Kerja & Fasilitas" },
+  { kanji: "行事", reading: "ぎょうじ", arti: "acara", kategori: "Kerja & Fasilitas" },
+  { kanji: "禁止", reading: "きんし", arti: "larangan", kategori: "Kerja & Fasilitas" },
+  { kanji: "計画", reading: "けいかく", arti: "rencana", kategori: "Kerja & Fasilitas" },
+  { kanji: "掲示", reading: "けいじ", arti: "pengumuman", kategori: "Kerja & Fasilitas" },
+  { kanji: "ケース", reading: "けえす", arti: "kasus", kategori: "Kerja & Fasilitas" },
+  { kanji: "玄関", reading: "げんかん", arti: "area pintu masuk", kategori: "Kerja & Fasilitas" },
+  { kanji: "参加者", reading: "さんかしゃ", arti: "peserta", kategori: "Kerja & Fasilitas" },
+  { kanji: "事故", reading: "じこ", arti: "kecelakaan", kategori: "Kerja & Fasilitas" },
+  { kanji: "施設", reading: "しせつ", arti: "fasilitas", kategori: "Kerja & Fasilitas" },
+  { kanji: "就寝", reading: "しゅうしん", arti: "pergi tidur", kategori: "Kerja & Fasilitas" },
+  { kanji: "出勤", reading: "しゅっきん", arti: "pergi bekerja", kategori: "Kerja & Fasilitas" },
+  { kanji: "巡視", reading: "じゅんし", arti: "patroli", kategori: "Kerja & Fasilitas" },
+  { kanji: "使用", reading: "しよう", arti: "menggunakan", kategori: "Kerja & Fasilitas" },
+  { kanji: "状況", reading: "じょうきょう", arti: "kondisi", kategori: "Kerja & Fasilitas" },
+  { kanji: "ショートステイ", reading: "しょおとすてい", arti: "tinggal jangka pendek", kategori: "Kerja & Fasilitas" },
+  { kanji: "自立", reading: "じりつ", arti: "kemandirian", kategori: "Kerja & Fasilitas" },
+  { kanji: "送迎車", reading: "そうげいしゃ", arti: "mobil antar-jemput", kategori: "Kerja & Fasilitas" },
+  { kanji: "退勤", reading: "たいきん", arti: "pulang bekerja", kategori: "Kerja & Fasilitas" },
+  { kanji: "タイヤ", reading: "たいや", arti: "roda", kategori: "Kerja & Fasilitas" },
+  { kanji: "建物", reading: "たてもの", arti: "bangunan", kategori: "Kerja & Fasilitas" },
+  { kanji: "担当者", reading: "たんとうしゃ", arti: "staf penanggung jawab", kategori: "Kerja & Fasilitas" },
+  { kanji: "調理員", reading: "ちょうりいん", arti: "juru masak", kategori: "Kerja & Fasilitas" },
+  { kanji: "転倒", reading: "てんとう", arti: "terjatuh", kategori: "Kerja & Fasilitas" },
+  { kanji: "ナースコール", reading: "なあすこおる", arti: "alat pemanggil perawat", kategori: "Kerja & Fasilitas" },
+  { kanji: "日勤", reading: "にっきん", arti: "shift siang", kategori: "Kerja & Fasilitas" },
+  { kanji: "濡れる", reading: "ぬれる", arti: "basah", kategori: "Kerja & Fasilitas" },
+  { kanji: "吐く", reading: "はく", arti: "muntah", kategori: "Kerja & Fasilitas" },
+  { kanji: "外す", reading: "はずす", arti: "melepas", kategori: "Kerja & Fasilitas" },
+  { kanji: "非常口", reading: "ひじょうぐち", arti: "pintu darurat", kategori: "Kerja & Fasilitas" },
+  { kanji: "非常ベル", reading: "ひじょうべる", arti: "alarm darurat", kategori: "Kerja & Fasilitas" },
+  { kanji: "119番", reading: "ひゃくじゅうきゅうばん", arti: "panggilan 119", kategori: "Kerja & Fasilitas" },
+  { kanji: "服薬", reading: "ふくやく", arti: "minum obat", kategori: "Kerja & Fasilitas" },
+  { kanji: "変更", reading: "へんこう", arti: "perubahan", kategori: "Kerja & Fasilitas" },
+  { kanji: "報告", reading: "ほうこく", arti: "laporan", kategori: "Kerja & Fasilitas" },
+  { kanji: "ホール", reading: "ほおる", arti: "aula", kategori: "Kerja & Fasilitas" },
+  { kanji: "まつり", reading: "まつり", arti: "festival", kategori: "Kerja & Fasilitas" },
+  { kanji: "ミーティング", reading: "みいちんぐ", arti: "pertemuan", kategori: "Kerja & Fasilitas" },
+  { kanji: "見守り", reading: "みまもり", arti: "mengawasi", kategori: "Kerja & Fasilitas" },
+  { kanji: "面会", reading: "めんかい", arti: "besuk", kategori: "Kerja & Fasilitas" },
+  { kanji: "申し送り", reading: "もうしおくり", arti: "serah-terima", kategori: "Kerja & Fasilitas" },
+  { kanji: "夜勤", reading: "やきん", arti: "shift malam", kategori: "Kerja & Fasilitas" },
+  { kanji: "流行", reading: "りゅうこう", arti: "mewabah, epidemik", kategori: "Kerja & Fasilitas" },
+  { kanji: "利用者", reading: "りようしゃ", arti: "pengguna", kategori: "Kerja & Fasilitas" },
+  { kanji: "看護師", reading: "かんごし", arti: "perawat", kategori: "Kerja & Fasilitas" },
+  { kanji: "職員", reading: "しょくいん", arti: "staf", kategori: "Kerja & Fasilitas" },
+  { kanji: "パジャマ", reading: "ぱじゃま", arti: "piyama", kategori: "Kerja & Fasilitas" },
+  { kanji: "呼び出しボタン", reading: "よびだしぼたん", arti: "tombol panggil", kategori: "Kerja & Fasilitas" },
+  { kanji: "確認", reading: "かくにん", arti: "memeriksa, memastikan", kategori: "Kerja & Fasilitas" },
+];
+
+const KATEGORI_WARNA = {
+  "Bagian Tubuh": "#e74c3c",
+  "Makanan & Minuman": "#e67e22",
+  "Perawatan Makan": "#f39c12",
+  "Berpindah & Posisi": "#27ae60",
+  "Penyakit & Gejala": "#8e44ad",
+  "Buang Air (Toilet)": "#2980b9",
+  "Kebersihan Diri": "#16a085",
+  "Mandi & Kebersihan": "#1abc9c",
+  "Urusan Rumah": "#d35400",
+  "Kerja & Fasilitas": "#2c3e50",
+};
+
+const MODES = [
+  { id: "kanji-to-arti", label: "Kanji → Arti", icon: "🇯🇵→🇮🇩" },
+  { id: "arti-to-kanji", label: "Arti → Kanji", icon: "🇮🇩→🇯🇵" },
+  { id: "kanji-to-reading", label: "Kanji → Furigana", icon: "漢→ふ" },
+];
+
+const SEMUA_KATEGORI = [...new Set(ALL_VOCAB.map(v => v.kategori))];
+
+// State
+let currentMode = "kanji-to-arti";
+let selectedKategori = new Set(SEMUA_KATEGORI);
+let showFuri = true;
+let questions = [];
+let currentIdx = 0;
+let selected = null;
+let score = 0;
+let answers = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getWrongOptions(correct, pool, field, count = 3) {
+  const wrongs = pool.filter(v => v[field] !== correct[field]).map(v => v[field]);
+  return shuffle([...new Set(wrongs)]).slice(0, count);
+}
+
+function generateQuestion(vocab, allVocab, mode) {
+  if (mode === "kanji-to-arti") {
+    const correct = vocab.arti;
+    const wrongs = getWrongOptions(vocab, allVocab, "arti");
+    return { prompt: vocab.kanji, furigana: vocab.reading, type: "Artinya?", options: shuffle([correct, ...wrongs]), correct };
+  } else if (mode === "arti-to-kanji") {
+    const correct = vocab.kanji;
+    const wrongs = getWrongOptions(vocab, allVocab, "kanji");
+    return { prompt: vocab.arti, furigana: null, type: "Kata Jepangnya?", options: shuffle([correct, ...wrongs]), correct, correctReading: vocab.reading };
+  } else {
+    const correct = vocab.reading;
+    const wrongs = getWrongOptions(vocab, allVocab, "reading");
+    return { prompt: vocab.kanji, furigana: null, type: "Cara bacanya?", options: shuffle([correct, ...wrongs]), correct };
+  }
+}
+
+function getFilteredVocab() {
+  return ALL_VOCAB.filter(v => selectedKategori.has(v.kategori));
+}
+
+function showScreen(name) {
+  document.getElementById('screen-menu').classList.toggle('hidden', name !== 'menu');
+  document.getElementById('screen-quiz').classList.toggle('hidden', name !== 'quiz');
+  document.getElementById('screen-result').classList.toggle('hidden', name !== 'result');
+}
+
+function goToMenu() { showScreen('menu'); renderMenu(); }
+
+function toggleFuri() {
+  showFuri = !showFuri;
+  const t = document.getElementById('furi-toggle');
+  t.classList.toggle('on', showFuri);
+}
+
+function selectAllKategori() {
+  selectedKategori = new Set(SEMUA_KATEGORI);
+  renderKatChips();
+  updateKatCount();
+}
+
+function resetKategori() {
+  selectedKategori = new Set([SEMUA_KATEGORI[0]]);
+  renderKatChips();
+  updateKatCount();
+}
+
+function toggleKategori(k) {
+  if (selectedKategori.has(k)) {
+    if (selectedKategori.size > 1) selectedKategori.delete(k);
+  } else {
+    selectedKategori.add(k);
+  }
+  renderKatChips();
+  updateKatCount();
+}
+
+function updateKatCount() {
+  const fv = getFilteredVocab();
+  document.getElementById('kat-count').textContent = fv.length + ' kata dipilih';
+  const btn = document.getElementById('start-btn');
+  btn.textContent = 'MULAI KUIS (' + fv.length + ' soal)';
+  btn.disabled = fv.length < 4;
+}
+
+function renderKatChips() {
+  const container = document.getElementById('kat-chips');
+  container.innerHTML = '';
+  SEMUA_KATEGORI.forEach(k => {
+    const active = selectedKategori.has(k);
+    const col = KATEGORI_WARNA[k];
+    const count = ALL_VOCAB.filter(v => v.kategori === k).length;
+    const btn = document.createElement('button');
+    btn.className = 'kat-chip';
+    btn.style.borderColor = active ? col : '#2a2d3a';
+    btn.style.background = active ? col + '22' : 'transparent';
+    btn.style.color = active ? col : '#666';
+    btn.innerHTML = '<span>' + k + '</span><span style="opacity:0.7;font-size:11px">' + count + '</span>';
+    btn.onclick = () => toggleKategori(k);
+    container.appendChild(btn);
+  });
+}
+
+function renderMenu() {
+  document.getElementById('vocab-count-text').textContent = ALL_VOCAB.length + ' kosakata • ' + SEMUA_KATEGORI.length + ' kategori';
+  const modeList = document.getElementById('mode-list');
+  modeList.innerHTML = '';
+  MODES.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-mode' + (currentMode === m.id ? ' active' : '');
+    btn.innerHTML = '<span style="font-size:18px;min-width:36px;text-align:center">' + m.icon + '</span><span>' + m.label + '</span><span class="check">✓</span>';
+    btn.onclick = () => {
+      currentMode = m.id;
+      document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    };
+    modeList.appendChild(btn);
+  });
+  renderKatChips();
+  updateKatCount();
+  const t = document.getElementById('furi-toggle');
+  t.classList.toggle('on', showFuri);
+}
+
+function startQuiz() {
+  const filtered = getFilteredVocab();
+  if (filtered.length < 4) return;
+  const pool = shuffle(filtered);
+  questions = pool.map(v => ({ ...generateQuestion(v, filtered, currentMode), kategori: v.kategori, vocab: v }));
+  currentIdx = 0;
+  selected = null;
+  score = 0;
+  answers = [];
+  showScreen('quiz');
+  renderQuiz();
+}
+
+function renderQuiz() {
+  if (!questions[currentIdx]) return;
+  const q = questions[currentIdx];
+  const col = KATEGORI_WARNA[q.kategori] || '#4fc3f7';
+  const progress = ((currentIdx) / questions.length) * 100;
+
+  document.getElementById('quiz-counter').innerHTML = (currentIdx + 1) + ' <span>/ ' + questions.length + '</span>';
+  document.getElementById('quiz-score').textContent = '✓ ' + score;
+  document.getElementById('progress-fill').style.width = progress + '%';
+  document.getElementById('progress-fill').style.background = 'linear-gradient(90deg, ' + col + ', #4fc3f7)';
+
+  const badge = document.getElementById('kat-badge');
+  badge.textContent = q.kategori;
+  badge.style.background = col + '22';
+  badge.style.color = col;
+
+  document.getElementById('question-box').style.border = '1px solid ' + col + '33';
+  document.getElementById('question-type').textContent = q.type;
+  const promptEl = document.getElementById('question-prompt');
+  promptEl.textContent = q.prompt;
+  promptEl.style.fontSize = q.prompt.length > 8 ? '22px' : '36px';
+
+  const furiEl = document.getElementById('question-furigana');
+  if (q.furigana && showFuri) {
+    furiEl.textContent = q.furigana;
+    furiEl.classList.remove('hidden');
+  } else {
+    furiEl.classList.add('hidden');
+  }
+
+  const optList = document.getElementById('options-list');
+  optList.innerHTML = '';
+  const HIRAGANA = ["あ", "い", "う", "え"];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="opt-prefix">' + (HIRAGANA[i] || (i+1)) + '</span><span>' + opt + '</span>';
+    btn.onclick = () => handleSelect(opt);
+    optList.appendChild(btn);
+  });
+
+  document.getElementById('feedback-area').classList.add('hidden');
+  document.getElementById('feedback-area').innerHTML = '';
+
+  const card = document.getElementById('quiz-card');
+  card.classList.remove('slide-in');
+  void card.offsetWidth;
+  card.classList.add('slide-in');
+}
+
+function handleSelect(opt) {
+  if (selected !== null) return;
+  selected = opt;
+  const q = questions[currentIdx];
+  const isCorrect = opt === q.correct;
+  if (isCorrect) score++;
+  answers.push({ ...q, chosen: opt, correct: isCorrect });
+
+  document.getElementById('quiz-score').textContent = '✓ ' + score;
+
+  const KATAKANA = ["ア", "イ", "ウ", "エ"];
+  const optBtns = document.querySelectorAll('.opt-btn');
+  optBtns.forEach((btn, i) => {
+    const btnOpt = q.options[i];
+    btn.onclick = null;
+    if (btnOpt === q.correct) {
+      btn.classList.add('correct');
+      btn.querySelector('.opt-prefix').style.background = '#4caf50';
+      btn.querySelector('.opt-prefix').style.color = '#fff';
+    } else if (btnOpt === opt && !isCorrect) {
+      btn.classList.add('wrong');
+      btn.querySelector('.opt-prefix').style.background = '#f44336';
+      btn.querySelector('.opt-prefix').style.color = '#fff';
+    }
+  });
+
+  const feedbackArea = document.getElementById('feedback-area');
+  let feedbackHTML = '<div class="feedback-box ' + (isCorrect ? 'correct' : 'wrong') + '">'
+    + '<span class="feedback-emoji">' + (isCorrect ? '✅' : '❌') + '</span>'
+    + '<div>'
+    + '<div class="feedback-title ' + (isCorrect ? 'correct' : 'wrong') + '">' + (isCorrect ? 'Benar!' : 'Salah!') + '</div>';
+  if (!isCorrect) {
+    feedbackHTML += '<div class="feedback-answer">Jawaban: <strong>' + q.correct + '</strong></div>';
+  }
+  if (q.correctReading) {
+    feedbackHTML += '<div class="feedback-reading">(' + q.correctReading + ')</div>';
+  }
+  feedbackHTML += '</div></div>';
+  feedbackHTML += '<button class="next-btn" onclick="nextQuestion()">'
+    + (currentIdx + 1 >= questions.length ? 'LIHAT HASIL →' : 'LANJUT →') + '</button>';
+  feedbackArea.innerHTML = feedbackHTML;
+  feedbackArea.classList.remove('hidden');
+}
+
+function nextQuestion() {
+  if (currentIdx + 1 >= questions.length) {
+    showResult();
+  } else {
+    currentIdx++;
+    selected = null;
+    renderQuiz();
+  }
+}
+
+function showResult() {
+  showScreen('result');
+  const pct = Math.round(score / questions.length * 100);
+  const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '💪';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-score').innerHTML = score + '<span>/' + questions.length + '</span>';
+  document.getElementById('result-pct').textContent = pct + '% benar';
+
+  const recap = document.getElementById('recap-list');
+  recap.innerHTML = '';
+  answers.forEach(a => {
+    const col = KATEGORI_WARNA[a.kategori] || '#4fc3f7';
+    const row = document.createElement('div');
+    row.className = 'res-row';
+    let html = '<div class="res-row-inner"><div class="res-left">'
+      + '<div><span class="res-kat-badge" style="background:' + col + '33;color:' + col + '">' + a.kategori + '</span></div>'
+      + '<div class="res-prompt">' + a.prompt + '</div>';
+    if (a.furigana && showFuri) html += '<div class="res-furigana">' + a.furigana + '</div>';
+    html += '<div class="res-chosen ' + (a.correct ? 'correct-ans' : 'wrong-ans') + '">'
+      + (a.correct ? '✓' : '✗') + ' ' + a.chosen + '</div>';
+    if (!a.correct) {
+      const correctVal = typeof a.correct === 'boolean' ? a.chosen : questions.find(q => q.prompt === a.prompt && q.correct === a.chosen)?.correct || '';
+      html += '<div class="res-correct-ans">→ ' + a.chosen + '</div>';
+    }
+    html += '</div><div class="res-emoji">' + (a.correct ? '✅' : '❌') + '</div></div>';
+    row.innerHTML = html;
+    recap.appendChild(row);
+  });
+}
+
+function retryQuiz() {
+  startQuiz();
+}
+
+// Init
+renderMenu();
+showScreen('menu');
+</script>
+</body>
+</html>
