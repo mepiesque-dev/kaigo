@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soal Isian Hiragana｜介護日本語</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Saira+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { min-height: 100vh; background: #FFF9F0; color: #2D2520; font-family: 'Noto Sans JP', sans-serif; }
+
+.header {
+  padding: 20px 16px 16px; text-align: center;
+  background: linear-gradient(135deg, #534AB7 0%, #7F77DD 50%, #AFA9EC 100%);
+  position: relative; overflow: hidden;
+}
+.header::before { content:''; position:absolute; inset:0; background: radial-gradient(circle at 80% 30%, rgba(255,255,255,0.2) 0%, transparent 55%); }
+.header-sub { font-size:11px; letter-spacing:4px; color:rgba(255,255,255,0.85); text-transform:uppercase; font-family:'Saira Condensed',sans-serif; margin-bottom:4px; position:relative; }
+.header-title { font-size:28px; font-weight:900; font-family:'Saira Condensed',sans-serif; letter-spacing:1px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,0.15); position:relative; }
+.header-count { font-size:12px; color:rgba(255,255,255,0.85); margin-top:4px; position:relative; font-weight:600; }
+
+.controls { padding:16px; max-width:520px; margin:0 auto; }
+.ctrl-label { font-size:11px; color:#AA8870; letter-spacing:2px; text-transform:uppercase; font-family:'Saira Condensed',sans-serif; margin-bottom:8px; font-weight:700; }
+
+.mode-group { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.mode-btn {
+  background:#fff; border:2px solid #E8D5C0; border-radius:10px;
+  color:#AA8870; padding:7px 14px; cursor:pointer; transition:all 0.18s;
+  font-size:12px; font-family:inherit; font-weight:700;
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+}
+.mode-btn.active { border-color:#534AB7; background:#EEEDFE; color:#534AB7; box-shadow:0 2px 8px rgba(83,74,183,0.2); }
+
+.kat-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.kat-chip {
+  padding:5px 12px; border-radius:99px; font-size:11px;
+  cursor:pointer; border:2px solid; transition:all 0.15s;
+  font-family:inherit; font-weight:700;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+.kat-chip:hover { transform:translateY(-1px); }
+
+.start-btn {
+  background:linear-gradient(135deg, #534AB7, #7F77DD); color:#fff;
+  border:none; border-radius:14px; padding:15px 0; font-size:16px;
+  font-weight:900; font-family:'Saira Condensed',sans-serif;
+  letter-spacing:1px; cursor:pointer; width:100%;
+  transition:transform 0.15s, box-shadow 0.15s;
+  box-shadow:0 6px 20px rgba(83,74,183,0.35);
+}
+.start-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(83,74,183,0.45); }
+
+.quiz-wrap { max-width:520px; margin:0 auto; padding:0 16px 30px; display:none; }
+
+.prog-area { padding:14px 0 8px; }
+.prog-meta { display:flex; justify-content:space-between; font-size:12px; color:#AA8870; margin-bottom:7px; font-family:'Saira Condensed',sans-serif; font-weight:700; }
+.prog-meta .benar-count { color:#2E7D32; }
+.prog-bg { height:8px; background:#F0E0D0; border-radius:4px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:4px; background:linear-gradient(90deg, #534AB7, #AFA9EC); transition:width 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+
+.stats-row { display:flex; gap:8px; padding:8px 0; font-size:12px; font-family:'Saira Condensed',sans-serif; font-weight:700; flex-wrap:wrap; }
+.stat-chip { padding:5px 12px; border-radius:10px; background:#fff; border:2px solid #F0E0D0; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
+.stat-chip.green { color:#2E7D32; border-color:#A5D6A7; background:#F1F8E9; }
+.stat-chip.red { color:#C62828; border-color:#FFCDD2; background:#FFF5F5; }
+.stat-chip.blue { color:#534AB7; border-color:#AFA9EC; background:#EEEDFE; }
+
+.q-card {
+  background:#fff; border-radius:22px; border:2px solid #E8D8F0;
+  padding:28px 22px; margin:10px 0 14px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.09);
+  position:relative; overflow:hidden;
+}
+.q-accent { position:absolute; top:0; left:0; right:0; height:5px; border-radius:22px 22px 0 0; }
+.kat-badge {
+  display:inline-block; font-size:10px; font-weight:700; padding:4px 10px;
+  border-radius:8px; margin-bottom:12px;
+  font-family:'Saira Condensed',sans-serif; letter-spacing:0.5px;
+}
+.q-prompt { font-size:clamp(1.6rem, 7vw, 2.6rem); font-weight:900; line-height:1.35; color:#2D2520; margin-bottom:6px; }
+.q-sub { font-size:13px; color:#AA8870; margin-bottom:16px; }
+.q-num-label { font-size:11px; color:#CCC0B0; font-family:'Saira Condensed',sans-serif; margin-bottom:10px; }
+
+.answer-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.hira-input {
+  flex:1; min-width:160px; font-size:20px; padding:10px 14px;
+  border-radius:12px; border:2px solid #E0D0F0;
+  font-family:'Noto Sans JP', sans-serif; color:#2D2520;
+  background:#FAFAFA; outline:none; transition:border-color 0.15s;
+}
+.hira-input:focus { border-color:#7F77DD; box-shadow:0 0 0 3px rgba(127,119,221,0.15); }
+.hira-input.correct { border-color:#4CAF50; background:#F1F8E9; color:#2E7D32; }
+.hira-input.wrong { border-color:#EF5350; background:#FFF5F5; color:#C62828; }
+
+.check-btn {
+  padding:10px 20px; border-radius:12px; font-size:14px;
+  background:linear-gradient(135deg,#534AB7,#7F77DD); color:#fff;
+  border:none; cursor:pointer; font-family:inherit; font-weight:700;
+  box-shadow:0 4px 12px rgba(83,74,183,0.3); transition:all 0.15s;
+}
+.check-btn:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(83,74,183,0.4); }
+
+.feedback {
+  margin-top:12px; padding:10px 14px; border-radius:12px;
+  font-size:14px; font-weight:700; display:none;
+}
+.feedback.correct { background:#F1F8E9; color:#2E7D32; border:2px solid #A5D6A7; display:block; }
+.feedback.wrong { background:#FFF5F5; color:#C62828; border:2px solid #FFCDD2; display:block; }
+
+.hint-btn {
+  background:none; border:none; color:#7F77DD; font-size:12px;
+  cursor:pointer; text-decoration:underline; margin-top:8px;
+  font-family:inherit; padding:0; display:none;
+}
+
+.nav-row { display:flex; gap:8px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
+.nav-btn {
+  background:#fff; border:2px solid #E8D5C0; border-radius:10px;
+  color:#7A6055; padding:9px 18px; cursor:pointer; transition:all 0.15s;
+  font-size:13px; font-family:inherit; font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.nav-btn:hover:not(:disabled) { border-color:#534AB7; color:#534AB7; background:#EEEDFE; }
+.nav-btn:disabled { opacity:0.35; cursor:default; }
+.nav-btn.shuffle-btn { background:#EEEDFE; border-color:#AFA9EC; color:#534AB7; }
+.nav-btn.menu-btn { font-family:'Saira Condensed',sans-serif; font-size:12px; letter-spacing:1px; }
+
+.result-wrap {
+  max-width:520px; margin:20px auto; padding:0 16px 40px; text-align:center;
+  display:none;
+}
+.result-card { background:#fff; border-radius:22px; border:2px solid #E0D0F0; padding:40px 24px; box-shadow:0 8px 28px rgba(0,0,0,0.09); }
+.result-score { font-size:56px; font-weight:900; color:#534AB7; font-family:'Saira Condensed',sans-serif; }
+.result-pct { font-size:18px; color:#AA8870; margin-top:4px; font-weight:700; }
+.result-msg { font-size:16px; color:#2D2520; margin-top:16px; line-height:1.5; }
+.result-restart {
+  margin-top:24px; background:linear-gradient(135deg,#534AB7,#7F77DD); color:#fff;
+  border:none; border-radius:14px; padding:14px 40px; font-size:15px;
+  font-weight:900; font-family:'Saira Condensed',sans-serif;
+  letter-spacing:1px; cursor:pointer;
+  box-shadow:0 6px 20px rgba(83,74,183,0.35); transition:all 0.15s;
+}
+.result-restart:hover { transform:translateY(-2px); }
+
+.hidden { display:none !important; }
+
+@keyframes slideIn { from { opacity:0.5; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.slide-in { animation:slideIn 0.22s ease; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-sub">介護日本語</div>
+  <div class="header-title">SOAL ISIAN HIRAGANA</div>
+  <div class="header-count" id="headerCount">263 kosakata • 10 kategori</div>
+</div>
+
+<div class="controls" id="menuArea">
+  <div style="margin-bottom:12px">
+    <div class="ctrl-label">Mode Soal</div>
+    <div class="mode-group">
+      <button class="mode-btn active" onclick="setMode('kanji-hira',this)">漢字 → Hiragana</button>
+      <button class="mode-btn" onclick="setMode('indo-hira',this)">Arti → Hiragana</button>
+      <button class="mode-btn" onclick="setMode('hira-indo',this)">Hiragana → Arti</button>
+    </div>
+  </div>
+  <div style="margin-bottom:14px">
+    <div class="ctrl-label">Kategori</div>
+    <div class="kat-chips" id="katChips"></div>
+  </div>
+  <button class="start-btn" id="startBtn" onclick="startQuiz()">MULAI SOAL (263 soal)</button>
+</div>
+
+<div class="quiz-wrap" id="quizArea">
+  <div class="prog-area">
+    <div class="prog-meta">
+      <span id="cardCounter">1 / 263</span>
+      <span class="benar-count" id="benarCounter">✓ 0 benar</span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-chip green" id="statBenar">✓ BENAR: 0</div>
+    <div class="stat-chip red" id="statSalah">✗ SALAH: 0</div>
+    <div class="stat-chip blue" id="statSisa">▸ SISA: 0</div>
+  </div>
+
+  <div class="q-card" id="qCard">
+    <div class="q-accent" id="qAccent"></div>
+    <div class="q-num-label" id="qNumLabel">Soal 1</div>
+    <div class="kat-badge" id="qKatBadge">—</div>
+    <div class="q-prompt" id="qPrompt">—</div>
+    <div class="q-sub" id="qSub"></div>
+    <div class="answer-row">
+      <input class="hira-input" id="answerInput" placeholder="Tulis hiragana di sini..." autocomplete="off" spellcheck="false" />
+      <button class="check-btn" onclick="checkAnswer()">Periksa</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="hint-btn" id="hintBtn" onclick="showHint()">Tampilkan jawaban</button>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn" onclick="goCard(-1)">← Prev</button>
+    <button class="nav-btn shuffle-btn" onclick="shuffleAndRestart()">⇄ Acak Ulang</button>
+    <button class="nav-btn" id="nextBtn" onclick="goCard(1)">Next →</button>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn menu-btn" onclick="backToMenu()">← Menu</button>
+  </div>
+</div>
+
+<div class="result-wrap" id="resultWrap">
+  <div class="result-card">
+    <div class="result-score" id="resultScore">0/0</div>
+    <div class="result-pct" id="resultPct">0%</div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="result-restart" onclick="shuffleAndRestart()">ULANGI LAGI</button>
+    <br><br>
+    <button class="nav-btn menu-btn" onclick="backToMenu()" style="margin:0 auto;display:block">← Kembali ke Menu</button>
+  </div>
+</div>
+
+<script>
+const ALL_VOCAB = [
+  { kanji: "頭", reading: "あたま", arti: "kepala", kategori: "Bagian Tubuh" },
+  { kanji: "額", reading: "ひたい", arti: "dahi", kategori: "Bagian Tubuh" },
+  { kanji: "目", reading: "め", arti: "mata", kategori: "Bagian Tubuh" },
+  { kanji: "目頭", reading: "めがしら", arti: "sudut dalam mata", kategori: "Bagian Tubuh" },
+  { kanji: "目尻", reading: "めじり", arti: "sudut luar mata", kategori: "Bagian Tubuh" },
+  { kanji: "耳", reading: "みみ", arti: "telinga", kategori: "Bagian Tubuh" },
+  { kanji: "鼻", reading: "はな", arti: "hidung", kategori: "Bagian Tubuh" },
+  { kanji: "口", reading: "くち", arti: "mulut", kategori: "Bagian Tubuh" },
+  { kanji: "唇", reading: "くちびる", arti: "bibir", kategori: "Bagian Tubuh" },
+  { kanji: "顎", reading: "あご", arti: "dagu", kategori: "Bagian Tubuh" },
+  { kanji: "首", reading: "くび", arti: "leher", kategori: "Bagian Tubuh" },
+  { kanji: "喉", reading: "のど", arti: "tenggorokan", kategori: "Bagian Tubuh" },
+  { kanji: "脇", reading: "わき", arti: "ketiak", kategori: "Bagian Tubuh" },
+  { kanji: "腕", reading: "うで", arti: "lengan", kategori: "Bagian Tubuh" },
+  { kanji: "肘", reading: "ひじ", arti: "siku", kategori: "Bagian Tubuh" },
+  { kanji: "腰", reading: "こし", arti: "pinggang", kategori: "Bagian Tubuh" },
+  { kanji: "手首", reading: "てくび", arti: "pergelangan tangan", kategori: "Bagian Tubuh" },
+  { kanji: "手のひら", reading: "てのひら", arti: "telapak tangan", kategori: "Bagian Tubuh" },
+  { kanji: "指", reading: "ゆび", arti: "jari", kategori: "Bagian Tubuh" },
+  { kanji: "指先", reading: "ゆびさき", arti: "ujung jari", kategori: "Bagian Tubuh" },
+  { kanji: "手の甲", reading: "てのこう", arti: "punggung tangan", kategori: "Bagian Tubuh" },
+  { kanji: "足首", reading: "あしくび", arti: "pergelangan kaki", kategori: "Bagian Tubuh" },
+  { kanji: "つま先", reading: "つまさき", arti: "ujung jari kaki", kategori: "Bagian Tubuh" },
+  { kanji: "肩", reading: "かた", arti: "bahu", kategori: "Bagian Tubuh" },
+  { kanji: "背中", reading: "せなか", arti: "punggung", kategori: "Bagian Tubuh" },
+  { kanji: "胸", reading: "むね", arti: "dada", kategori: "Bagian Tubuh" },
+  { kanji: "臀部／尻", reading: "でんぶ / しり", arti: "pantat", kategori: "Bagian Tubuh" },
+  { kanji: "腹", reading: "はら", arti: "perut", kategori: "Bagian Tubuh" },
+  { kanji: "膝", reading: "ひざ", arti: "lutut", kategori: "Bagian Tubuh" },
+  { kanji: "踵", reading: "かかと", arti: "tumit", kategori: "Bagian Tubuh" },
+  { kanji: "足底／足の裏", reading: "そくてい / あしのうら", arti: "telapak kaki", kategori: "Bagian Tubuh" },
+  { kanji: "顔色", reading: "かおいろ", arti: "air muka", kategori: "Bagian Tubuh" },
+  { kanji: "患側", reading: "かんそく", arti: "sisi sakit", kategori: "Bagian Tubuh" },
+  { kanji: "健側", reading: "けんそく", arti: "sisi sehat", kategori: "Bagian Tubuh" },
+  { kanji: "健康", reading: "けんこう", arti: "kesehatan", kategori: "Bagian Tubuh" },
+  { kanji: "体調", reading: "たいちょう", arti: "kondisi fisik", kategori: "Bagian Tubuh" },
+  { kanji: "バイタルサイン", reading: "ばいたるさいん", arti: "tanda-tanda vital", kategori: "Bagian Tubuh" },
+  { kanji: "あげもの", reading: "あげもの", arti: "gorengan", kategori: "Makanan & Minuman" },
+  { kanji: "いためもの", reading: "いためもの", arti: "tumis", kategori: "Makanan & Minuman" },
+  { kanji: "おやつ", reading: "おやつ", arti: "camilan", kategori: "Makanan & Minuman" },
+  { kanji: "粥／お粥", reading: "かゆ / おかゆ", arti: "bubur", kategori: "Makanan & Minuman" },
+  { kanji: "カレーライス", reading: "かれえらいす", arti: "nasi kari", kategori: "Makanan & Minuman" },
+  { kanji: "献立", reading: "こんだて", arti: "daftar makanan", kategori: "Makanan & Minuman" },
+  { kanji: "献立表", reading: "こんだてひょう", arti: "tabel daftar makanan", kategori: "Makanan & Minuman" },
+  { kanji: "主食", reading: "しゅしょく", arti: "makanan pokok", kategori: "Makanan & Minuman" },
+  { kanji: "汁物", reading: "しるもの", arti: "sup", kategori: "Makanan & Minuman" },
+  { kanji: "ゼリー", reading: "ぜりい", arti: "jeli", kategori: "Makanan & Minuman" },
+  { kanji: "たまご焼き", reading: "たまごやき", arti: "telur goreng", kategori: "Makanan & Minuman" },
+  { kanji: "漬物", reading: "つけもの", arti: "acar", kategori: "Makanan & Minuman" },
+  { kanji: "天ぷら", reading: "てんぷら", arti: "tempura", kategori: "Makanan & Minuman" },
+  { kanji: "豆腐", reading: "とうふ", arti: "tahu", kategori: "Makanan & Minuman" },
+  { kanji: "丼", reading: "どんぶり", arti: "mangkuk", kategori: "Makanan & Minuman" },
+  { kanji: "煮付け", reading: "につけ", arti: "rebus berbumbu / semur", kategori: "Makanan & Minuman" },
+  { kanji: "煮物", reading: "にもの", arti: "rebusan", kategori: "Makanan & Minuman" },
+  { kanji: "ハンバーグ", reading: "はんばあぐ", arti: "daging hamburger", kategori: "Makanan & Minuman" },
+  { kanji: "副食", reading: "ふくしょく", arti: "lauk", kategori: "Makanan & Minuman" },
+  { kanji: "プリン", reading: "ぷりん", arti: "puding", kategori: "Makanan & Minuman" },
+  { kanji: "麦茶", reading: "むぎちゃ", arti: "teh gandum", kategori: "Makanan & Minuman" },
+  { kanji: "メニュー", reading: "めにゅう", arti: "menu", kategori: "Makanan & Minuman" },
+  { kanji: "焼き魚", reading: "やきざかな", arti: "ikan bakar", kategori: "Makanan & Minuman" },
+  { kanji: "ヨーグルト", reading: "よおぐると", arti: "yoghurt", kategori: "Makanan & Minuman" },
+  { kanji: "温める", reading: "あたためる", arti: "menghangatkan", kategori: "Perawatan Makan" },
+  { kanji: "エプロン", reading: "えぷろん", arti: "celemek", kategori: "Perawatan Makan" },
+  { kanji: "嚥下", reading: "えんげ", arti: "menelan", kategori: "Perawatan Makan" },
+  { kanji: "きざむ", reading: "きざむ", arti: "memotong", kategori: "Perawatan Makan" },
+  { kanji: "誤嚥", reading: "ごえん", arti: "tersedak paru (aspirasi)", kategori: "Perawatan Makan" },
+  { kanji: "こぼす", reading: "こぼす", arti: "menumpahkan", kategori: "Perawatan Makan" },
+  { kanji: "食器を下げる", reading: "さげる", arti: "membereskan alat makan", kategori: "Perawatan Makan" },
+  { kanji: "冷ます", reading: "さます", arti: "mendinginkan", kategori: "Perawatan Makan" },
+  { kanji: "食品", reading: "しょくひん", arti: "makanan", kategori: "Perawatan Makan" },
+  { kanji: "食欲", reading: "しょくよく", arti: "nafsu makan", kategori: "Perawatan Makan" },
+  { kanji: "水分補給", reading: "すいぶんほきゅう", arti: "asupan cairan", kategori: "Perawatan Makan" },
+  { kanji: "咳込む", reading: "せきこむ", arti: "batuk keras", kategori: "Perawatan Makan" },
+  { kanji: "とろみ粉", reading: "とろみこ", arti: "bubuk pengental", kategori: "Perawatan Makan" },
+  { kanji: "とろみをつける", reading: "つける", arti: "mengentalkan", kategori: "Perawatan Makan" },
+  { kanji: "飲み込む", reading: "のみこむ", arti: "menelan", kategori: "Perawatan Makan" },
+  { kanji: "一口大", reading: "ひとくちだい", arti: "ukuran satu gigitan", kategori: "Perawatan Makan" },
+  { kanji: "むせる", reading: "むせる", arti: "tersedak", kategori: "Perawatan Makan" },
+  { kanji: "量", reading: "りょう", arti: "jumlah", kategori: "Perawatan Makan" },
+  { kanji: "移乗", reading: "いじょう", arti: "beralih (pindah duduk)", kategori: "Berpindah & Posisi" },
+  { kanji: "移動", reading: "いどう", arti: "berpindah", kategori: "Berpindah & Posisi" },
+  { kanji: "移動用リフト", reading: "いどうようりふと", arti: "alat pemindah", kategori: "Berpindah & Posisi" },
+  { kanji: "起き上がる", reading: "おきあがる", arti: "bangkit", kategori: "Berpindah & Posisi" },
+  { kanji: "ブレーキをかける", reading: "かける", arti: "mengerem", kategori: "Berpindah & Posisi" },
+  { kanji: "臥床", reading: "がしょう", arti: "berbaring", kategori: "Berpindah & Posisi" },
+  { kanji: "車いす", reading: "くるまいす", arti: "kursi roda", kategori: "Berpindah & Posisi" },
+  { kanji: "声かけ", reading: "こえかけ", arti: "sapaan / interaksi", kategori: "Berpindah & Posisi" },
+  { kanji: "支える", reading: "ささえる", arti: "menopang", kategori: "Berpindah & Posisi" },
+  { kanji: "シルバーカー", reading: "しるばあかあ", arti: "troli lansia", kategori: "Berpindah & Posisi" },
+  { kanji: "すべる", reading: "すべる", arti: "tergelincir", kategori: "Berpindah & Posisi" },
+  { kanji: "スライディングシート", reading: "すらいぢんぐしいと", arti: "lembaran geser", kategori: "Berpindah & Posisi" },
+  { kanji: "杖", reading: "つえ", arti: "tongkat", kategori: "Berpindah & Posisi" },
+  { kanji: "杖をつく", reading: "つく", arti: "memakai tongkat", kategori: "Berpindah & Posisi" },
+  { kanji: "つかまる", reading: "つかまる", arti: "berpegangan", kategori: "Berpindah & Posisi" },
+  { kanji: "手すり", reading: "てすり", arti: "handrail (pegangan)", kategori: "Berpindah & Posisi" },
+  { kanji: "握る", reading: "にぎる", arti: "mencengkeram", kategori: "Berpindah & Posisi" },
+  { kanji: "寝返り", reading: "ねがえり", arti: "membalik badan", kategori: "Berpindah & Posisi" },
+  { kanji: "白杖", reading: "はくじょう", arti: "tongkat putih", kategori: "Berpindah & Posisi" },
+  { kanji: "ブレーキ", reading: "ぶれえき", arti: "rem", kategori: "Berpindah & Posisi" },
+  { kanji: "歩行器", reading: "ほこうき", arti: "alat bantu jalan", kategori: "Berpindah & Posisi" },
+  { kanji: "前屈み", reading: "まえかがみ", arti: "membungkuk", kategori: "Berpindah & Posisi" },
+  { kanji: "誘導", reading: "ゆうどう", arti: "panduan / mengarahkan", kategori: "Berpindah & Posisi" },
+  { kanji: "離床", reading: "りしょう", arti: "beranjak dari tempat tidur", kategori: "Berpindah & Posisi" },
+  { kanji: "仰臥位／あおむけ", reading: "ぎょうがい / あおむけ", arti: "terlentang", kategori: "Berpindah & Posisi" },
+  { kanji: "側臥位／よこむき", reading: "そくがい / よこむき", arti: "miring", kategori: "Berpindah & Posisi" },
+  { kanji: "腹臥位／うつぶせ", reading: "ふくがい / うつぶせ", arti: "tengkurap", kategori: "Berpindah & Posisi" },
+  { kanji: "端座位", reading: "たんざい", arti: "duduk tegak lurus", kategori: "Berpindah & Posisi" },
+  { kanji: "椅座位", reading: "いざい", arti: "duduk kursi", kategori: "Berpindah & Posisi" },
+  { kanji: "立位", reading: "りつい", arti: "berdiri", kategori: "Berpindah & Posisi" },
+  { kanji: "体位変換", reading: "たいいへんかん", arti: "mengubah posisi", kategori: "Berpindah & Posisi" },
+  { kanji: "疥癬", reading: "かいせん", arti: "skabies", kategori: "Penyakit & Gejala" },
+  { kanji: "風邪", reading: "かぜ", arti: "masuk angin / flu", kategori: "Penyakit & Gejala" },
+  { kanji: "高血圧症", reading: "こうけつあつしょう", arti: "hipertensi", kategori: "Penyakit & Gejala" },
+  { kanji: "食中毒", reading: "しょくちゅうどく", arti: "keracunan makanan", kategori: "Penyakit & Gejala" },
+  { kanji: "認知症", reading: "にんちしょう", arti: "demensia", kategori: "Penyakit & Gejala" },
+  { kanji: "熱中症", reading: "ねっちゅうしょう", arti: "heatstroke", kategori: "Penyakit & Gejala" },
+  { kanji: "肺炎", reading: "はいえん", arti: "pneumonia", kategori: "Penyakit & Gejala" },
+  { kanji: "白内障", reading: "はくないしょう", arti: "katarak", kategori: "Penyakit & Gejala" },
+  { kanji: "アレルギー", reading: "あれるぎい", arti: "alergi", kategori: "Penyakit & Gejala" },
+  { kanji: "痛い", reading: "いたい", arti: "sakit / nyeri", kategori: "Penyakit & Gejala" },
+  { kanji: "嘔吐", reading: "おうと", arti: "muntah", kategori: "Penyakit & Gejala" },
+  { kanji: "片麻痺", reading: "かたまひ", arti: "lumpuh sebelah", kategori: "Penyakit & Gejala" },
+  { kanji: "かゆい", reading: "かゆい", arti: "gatal", kategori: "Penyakit & Gejala" },
+  { kanji: "傷", reading: "きず", arti: "luka", kategori: "Penyakit & Gejala" },
+  { kanji: "苦しい", reading: "くるしい", arti: "sesak / menderita", kategori: "Penyakit & Gejala" },
+  { kanji: "下痢", reading: "げり", arti: "diare", kategori: "Penyakit & Gejala" },
+  { kanji: "拘縮", reading: "こうしゅく", arti: "kaku sendi", kategori: "Penyakit & Gejala" },
+  { kanji: "骨折", reading: "こっせつ", arti: "patah tulang", kategori: "Penyakit & Gejala" },
+  { kanji: "しびれる", reading: "しびれる", arti: "mati rasa", kategori: "Penyakit & Gejala" },
+  { kanji: "出血", reading: "しゅっけつ", arti: "berdarah", kategori: "Penyakit & Gejala" },
+  { kanji: "症状", reading: "しょうじょう", arti: "gejala", kategori: "Penyakit & Gejala" },
+  { kanji: "褥瘡", reading: "じょくそう", arti: "luka baring (dekubitus)", kategori: "Penyakit & Gejala" },
+  { kanji: "咳", reading: "せき", arti: "batuk", kategori: "Penyakit & Gejala" },
+  { kanji: "脱水", reading: "だっすい", arti: "dehidrasi", kategori: "Penyakit & Gejala" },
+  { kanji: "吐き気", reading: "はきけ", arti: "mual", kategori: "Penyakit & Gejala" },
+  { kanji: "発熱", reading: "はつねつ", arti: "demam", kategori: "Penyakit & Gejala" },
+  { kanji: "発汗", reading: "はっかん", arti: "berkeringat", kategori: "Penyakit & Gejala" },
+  { kanji: "はれる", reading: "はれる", arti: "bengkak / radang", kategori: "Penyakit & Gejala" },
+  { kanji: "便秘", reading: "べんぴ", arti: "konstipasi", kategori: "Penyakit & Gejala" },
+  { kanji: "発作", reading: "ほっさ", arti: "kejang", kategori: "Penyakit & Gejala" },
+  { kanji: "むくむ", reading: "むくむ", arti: "bengkak (edema)", kategori: "Penyakit & Gejala" },
+  { kanji: "めまい", reading: "めまい", arti: "pusing", kategori: "Penyakit & Gejala" },
+  { kanji: "ズボンを上げる", reading: "あげる", arti: "memakai celana", kategori: "Buang Air (Toilet)" },
+  { kanji: "足元", reading: "あしもと", arti: "kaki (bagian bawah)", kategori: "Buang Air (Toilet)" },
+  { kanji: "陰部", reading: "いんぶ", arti: "area genital", kategori: "Buang Air (Toilet)" },
+  { kanji: "おむつ", reading: "おむつ", arti: "popok", kategori: "Buang Air (Toilet)" },
+  { kanji: "浣腸", reading: "かんちょう", arti: "enema", kategori: "Buang Air (Toilet)" },
+  { kanji: "着替える", reading: "きがえる", arti: "berganti pakaian", kategori: "Buang Air (Toilet)" },
+  { kanji: "ズボンを下げる", reading: "さげる", arti: "menurunkan celana", kategori: "Buang Air (Toilet)" },
+  { kanji: "失禁", reading: "しっきん", arti: "inkontinensia", kategori: "Buang Air (Toilet)" },
+  { kanji: "羞恥心", reading: "しゅうちしん", arti: "rasa malu", kategori: "Buang Air (Toilet)" },
+  { kanji: "使い捨て手袋", reading: "つかいすててぶくろ", arti: "sarung tangan sekali pakai", kategori: "Buang Air (Toilet)" },
+  { kanji: "尿", reading: "にょう", arti: "urine", kategori: "Buang Air (Toilet)" },
+  { kanji: "尿器", reading: "にょうき", arti: "wadah urine", kategori: "Buang Air (Toilet)" },
+  { kanji: "尿意", reading: "にょうい", arti: "keinginan berkemih", kategori: "Buang Air (Toilet)" },
+  { kanji: "排泄", reading: "はいせつ", arti: "ekskresi", kategori: "Buang Air (Toilet)" },
+  { kanji: "便", reading: "べん", arti: "feses", kategori: "Buang Air (Toilet)" },
+  { kanji: "便意", reading: "べんい", arti: "keinginan defekasi", kategori: "Buang Air (Toilet)" },
+  { kanji: "便座", reading: "べんざ", arti: "toilet duduk", kategori: "Buang Air (Toilet)" },
+  { kanji: "ポータブルトイレ", reading: "ぽおたぶるといれ", arti: "toilet portabel", kategori: "Buang Air (Toilet)" },
+  { kanji: "衣類", reading: "いるい", arti: "pakaian", kategori: "Kebersihan Diri" },
+  { kanji: "入れ歯／義歯", reading: "いれば / ぎし", arti: "gigi tiruan / palsu", kategori: "Kebersihan Diri" },
+  { kanji: "うがい", reading: "うがい", arti: "berkumur", kategori: "Kebersihan Diri" },
+  { kanji: "上着", reading: "うわぎ", arti: "baju atasan", kategori: "Kebersihan Diri" },
+  { kanji: "起床", reading: "きしょう", arti: "bangun tidur", kategori: "Kebersihan Diri" },
+  { kanji: "くし", reading: "くし", arti: "sisir", kategori: "Kebersihan Diri" },
+  { kanji: "更衣", reading: "こうい", arti: "berganti pakaian", kategori: "Kebersihan Diri" },
+  { kanji: "口腔ケア", reading: "こうくうけあ", arti: "perawatan rongga mulut", kategori: "Kebersihan Diri" },
+  { kanji: "下着", reading: "したぎ", arti: "pakaian dalam", kategori: "Kebersihan Diri" },
+  { kanji: "スカート", reading: "すかあと", arti: "rok", kategori: "Kebersihan Diri" },
+  { kanji: "爪きり", reading: "つめきり", arti: "gunting kuku", kategori: "Kebersihan Diri" },
+  { kanji: "髪をとかす", reading: "とかす", arti: "menyisir rambut", kategori: "Kebersihan Diri" },
+  { kanji: "ドライヤー", reading: "どらいやあ", arti: "pengering rambut", kategori: "Kebersihan Diri" },
+  { kanji: "ねまき", reading: "ねまき", arti: "pakaian tidur", kategori: "Kebersihan Diri" },
+  { kanji: "歯ブラシ", reading: "はぶらし", arti: "sikat gigi", kategori: "Kebersihan Diri" },
+  { kanji: "歯磨き", reading: "はみがき", arti: "pasta gigi", kategori: "Kebersihan Diri" },
+  { kanji: "パンツ", reading: "ぱんつ", arti: "celana dalam", kategori: "Kebersihan Diri" },
+  { kanji: "ひげ剃り", reading: "ひげそり", arti: "pisau cukur", kategori: "Kebersihan Diri" },
+  { kanji: "みじたく", reading: "みじたく", arti: "merapikan diri", kategori: "Kebersihan Diri" },
+  { kanji: "口をゆすぐ", reading: "ゆすぐ", arti: "membilas mulut", kategori: "Kebersihan Diri" },
+  { kanji: "温度", reading: "おんど", arti: "suhu", kategori: "Mandi & Kebersihan" },
+  { kanji: "お湯をかける", reading: "かける", arti: "menuangkan air hangat", kategori: "Mandi & Kebersihan" },
+  { kanji: "汗をかく", reading: "かく", arti: "berkeringat", kategori: "Mandi & Kebersihan" },
+  { kanji: "シャンプー", reading: "しゃんぷう", arti: "sampo", kategori: "Mandi & Kebersihan" },
+  { kanji: "消毒液", reading: "しょうどくえき", arti: "larutan antiseptik", kategori: "Mandi & Kebersihan" },
+  { kanji: "清潔保持", reading: "せいけつほじ", arti: "menjaga kebersihan tubuh", kategori: "Mandi & Kebersihan" },
+  { kanji: "清拭", reading: "せいしき", arti: "mandi seka", kategori: "Mandi & Kebersihan" },
+  { kanji: "洗髪", reading: "せんぱつ", arti: "keramas", kategori: "Mandi & Kebersihan" },
+  { kanji: "洗面器", reading: "せんめんき", arti: "baskom cuci muka", kategori: "Mandi & Kebersihan" },
+  { kanji: "脱衣室", reading: "だついしつ", arti: "ruang ganti pakaian", kategori: "Mandi & Kebersihan" },
+  { kanji: "入浴", reading: "にゅうよく", arti: "mandi", kategori: "Mandi & Kebersihan" },
+  { kanji: "ぬるい", reading: "ぬるい", arti: "suam-suam kuku", kategori: "Mandi & Kebersihan" },
+  { kanji: "拭く", reading: "ふく", arti: "menyeka", kategori: "Mandi & Kebersihan" },
+  { kanji: "浴室", reading: "よくしつ", arti: "kamar mandi", kategori: "Mandi & Kebersihan" },
+  { kanji: "浴槽", reading: "よくそう", arti: "bak mandi", kategori: "Mandi & Kebersihan" },
+  { kanji: "リンス", reading: "りんす", arti: "kondisioner", kategori: "Mandi & Kebersihan" },
+  { kanji: "おしぼり", reading: "おしぼり", arti: "lap tangan basah", kategori: "Urusan Rumah" },
+  { kanji: "カーテン", reading: "かあてん", arti: "tirai", kategori: "Urusan Rumah" },
+  { kanji: "家事", reading: "かじ", arti: "pekerjaan rumah", kategori: "Urusan Rumah" },
+  { kanji: "片付ける", reading: "かたずける", arti: "membereskan", kategori: "Urusan Rumah" },
+  { kanji: "乾かす", reading: "かわかす", arti: "mengeringkan", kategori: "Urusan Rumah" },
+  { kanji: "換気", reading: "かんき", arti: "pergantian udara", kategori: "Urusan Rumah" },
+  { kanji: "シーツ", reading: "しいつ", arti: "seprai", kategori: "Urusan Rumah" },
+  { kanji: "洗濯物", reading: "せんたくもの", arti: "cucian", kategori: "Urusan Rumah" },
+  { kanji: "掃除機", reading: "そうじき", arti: "penyedot debu", kategori: "Urusan Rumah" },
+  { kanji: "たたむ", reading: "たたむ", arti: "melipat", kategori: "Urusan Rumah" },
+  { kanji: "調理", reading: "ちょうり", arti: "memasak", kategori: "Urusan Rumah" },
+  { kanji: "掃く", reading: "はく", arti: "menyapu", kategori: "Urusan Rumah" },
+  { kanji: "布団", reading: "ふとん", arti: "kasur", kategori: "Urusan Rumah" },
+  { kanji: "ほうき", reading: "ほうき", arti: "sapu", kategori: "Urusan Rumah" },
+  { kanji: "干す", reading: "ほす", arti: "menjemur", kategori: "Urusan Rumah" },
+  { kanji: "枕", reading: "まくら", arti: "bantal", kategori: "Urusan Rumah" },
+  { kanji: "毛布", reading: "もうふ", arti: "selimut", kategori: "Urusan Rumah" },
+  { kanji: "モップ", reading: "もっぷ", arti: "alat pel", kategori: "Urusan Rumah" },
+  { kanji: "観察", reading: "かんさつ", arti: "observasi", kategori: "Kerja & Fasilitas" },
+  { kanji: "行事", reading: "ぎょうじ", arti: "acara", kategori: "Kerja & Fasilitas" },
+  { kanji: "禁止", reading: "きんし", arti: "larangan", kategori: "Kerja & Fasilitas" },
+  { kanji: "計画", reading: "けいかく", arti: "rencana", kategori: "Kerja & Fasilitas" },
+  { kanji: "掲示", reading: "けいじ", arti: "pengumuman", kategori: "Kerja & Fasilitas" },
+  { kanji: "ケース", reading: "けえす", arti: "kasus", kategori: "Kerja & Fasilitas" },
+  { kanji: "玄関", reading: "げんかん", arti: "area pintu masuk", kategori: "Kerja & Fasilitas" },
+  { kanji: "参加者", reading: "さんかしゃ", arti: "peserta", kategori: "Kerja & Fasilitas" },
+  { kanji: "事故", reading: "じこ", arti: "kecelakaan", kategori: "Kerja & Fasilitas" },
+  { kanji: "施設", reading: "しせつ", arti: "fasilitas", kategori: "Kerja & Fasilitas" },
+  { kanji: "就寝", reading: "しゅうしん", arti: "pergi tidur", kategori: "Kerja & Fasilitas" },
+  { kanji: "出勤", reading: "しゅっきん", arti: "pergi bekerja", kategori: "Kerja & Fasilitas" },
+  { kanji: "巡視", reading: "じゅんし", arti: "patroli", kategori: "Kerja & Fasilitas" },
+  { kanji: "使用", reading: "しよう", arti: "menggunakan", kategori: "Kerja & Fasilitas" },
+  { kanji: "状況", reading: "じょうきょう", arti: "kondisi / situasi", kategori: "Kerja & Fasilitas" },
+  { kanji: "ショートステイ", reading: "しょおとすてい", arti: "tinggal jangka pendek", kategori: "Kerja & Fasilitas" },
+  { kanji: "自立", reading: "じりつ", arti: "kemandirian", kategori: "Kerja & Fasilitas" },
+  { kanji: "送迎車", reading: "そうげいしゃ", arti: "mobil antar-jemput", kategori: "Kerja & Fasilitas" },
+  { kanji: "退勤", reading: "たいきん", arti: "pulang bekerja", kategori: "Kerja & Fasilitas" },
+  { kanji: "タイヤ", reading: "たいや", arti: "roda", kategori: "Kerja & Fasilitas" },
+  { kanji: "建物", reading: "たてもの", arti: "bangunan", kategori: "Kerja & Fasilitas" },
+  { kanji: "担当者", reading: "たんとうしゃ", arti: "staf penanggung jawab", kategori: "Kerja & Fasilitas" },
+  { kanji: "調理員", reading: "ちょうりいん", arti: "juru masak", kategori: "Kerja & Fasilitas" },
+  { kanji: "転倒", reading: "てんとう", arti: "terjatuh", kategori: "Kerja & Fasilitas" },
+  { kanji: "ナースコール", reading: "なあすこおる", arti: "alat pemanggil perawat", kategori: "Kerja & Fasilitas" },
+  { kanji: "日勤", reading: "にっきん", arti: "shift siang", kategori: "Kerja & Fasilitas" },
+  { kanji: "濡れる", reading: "ぬれる", arti: "basah", kategori: "Kerja & Fasilitas" },
+  { kanji: "吐く", reading: "はく", arti: "muntah", kategori: "Kerja & Fasilitas" },
+  { kanji: "外す", reading: "はずす", arti: "melepas", kategori: "Kerja & Fasilitas" },
+  { kanji: "非常口", reading: "ひじょうぐち", arti: "pintu darurat", kategori: "Kerja & Fasilitas" },
+  { kanji: "非常ベル", reading: "ひじょうべる", arti: "alarm darurat", kategori: "Kerja & Fasilitas" },
+  { kanji: "119番", reading: "ひゃくじゅうきゅうばん", arti: "panggilan 119", kategori: "Kerja & Fasilitas" },
+  { kanji: "服薬", reading: "ふくやく", arti: "minum obat", kategori: "Kerja & Fasilitas" },
+  { kanji: "変更", reading: "へんこう", arti: "perubahan", kategori: "Kerja & Fasilitas" },
+  { kanji: "報告", reading: "ほうこく", arti: "laporan", kategori: "Kerja & Fasilitas" },
+  { kanji: "ホール", reading: "ほおる", arti: "aula", kategori: "Kerja & Fasilitas" },
+  { kanji: "まつり", reading: "まつり", arti: "festival", kategori: "Kerja & Fasilitas" },
+  { kanji: "ミーティング", reading: "みいちんぐ", arti: "pertemuan", kategori: "Kerja & Fasilitas" },
+  { kanji: "見守り", reading: "みまもり", arti: "mengawasi", kategori: "Kerja & Fasilitas" },
+  { kanji: "面会", reading: "めんかい", arti: "besuk", kategori: "Kerja & Fasilitas" },
+  { kanji: "申し送り", reading: "もうしおくり", arti: "serah-terima", kategori: "Kerja & Fasilitas" },
+  { kanji: "夜勤", reading: "やきん", arti: "shift malam", kategori: "Kerja & Fasilitas" },
+  { kanji: "流行", reading: "りゅうこう", arti: "mewabah / epidemik", kategori: "Kerja & Fasilitas" },
+  { kanji: "利用者", reading: "りようしゃ", arti: "pengguna layanan", kategori: "Kerja & Fasilitas" },
+  { kanji: "看護師", reading: "かんごし", arti: "perawat", kategori: "Kerja & Fasilitas" },
+  { kanji: "職員", reading: "しょくいん", arti: "staf", kategori: "Kerja & Fasilitas" },
+  { kanji: "パジャマ", reading: "ぱじゃま", arti: "piyama", kategori: "Kerja & Fasilitas" },
+  { kanji: "呼び出しボタン", reading: "よびだしぼたん", arti: "tombol panggil", kategori: "Kerja & Fasilitas" },
+  { kanji: "確認", reading: "かくにん", arti: "memeriksa / memastikan", kategori: "Kerja & Fasilitas" },
+];
+
+const KAT_COLORS = {
+  "Bagian Tubuh": "#E24B4A",
+  "Makanan & Minuman": "#BA7517",
+  "Perawatan Makan": "#639922",
+  "Berpindah & Posisi": "#1D9E75",
+  "Penyakit & Gejala": "#534AB7",
+  "Buang Air (Toilet)": "#185FA5",
+  "Kebersihan Diri": "#0F6E56",
+  "Mandi & Kebersihan": "#3B6D11",
+  "Urusan Rumah": "#993C1D",
+  "Kerja & Fasilitas": "#5F5E5A",
+};
+
+let deck = [], currentIdx = 0, benar = 0, salah = 0;
+let checkedIdx = new Set();
+let currentMode = 'kanji-hira';
+let selectedKat = new Set(Object.keys(KAT_COLORS));
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i=a.length-1; i>0; i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function normalize(s) { return (s||'').trim().replace(/\s+/g,'').toLowerCase(); }
+function getQA(v) {
+  if (currentMode==='kanji-hira') return { prompt: v.kanji, sub: v.arti, answer: v.reading };
+  if (currentMode==='indo-hira') return { prompt: v.arti, sub: '', answer: v.reading };
+  return { prompt: v.reading, sub: '', answer: v.arti };
+}
+
+function initChips() {
+  const c = document.getElementById('katChips'); c.innerHTML='';
+  Object.keys(KAT_COLORS).forEach(k => {
+    const col = KAT_COLORS[k];
+    const active = selectedKat.has(k);
+    const count = ALL_VOCAB.filter(v=>v.kategori===k).length;
+    const btn = document.createElement('button');
+    btn.className='kat-chip';
+    btn.style.borderColor = active ? col : '#DDD';
+    btn.style.background = active ? col+'22' : 'transparent';
+    btn.style.color = active ? col : '#999';
+    btn.innerHTML = k + ' <span style="opacity:0.6;font-size:10px">'+count+'</span>';
+    btn.onclick = () => {
+      if (selectedKat.has(k)) { if(selectedKat.size>1) selectedKat.delete(k); }
+      else selectedKat.add(k);
+      initChips(); updateStartBtn();
+    };
+    c.appendChild(btn);
+  });
+}
+
+function updateStartBtn() {
+  const n = ALL_VOCAB.filter(v=>selectedKat.has(v.kategori)).length;
+  document.getElementById('startBtn').textContent = 'MULAI SOAL (' + n + ' soal)';
+}
+
+function setMode(m, btn) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const pl = m==='hira-indo' ? 'Tulis arti dalam bahasa Indonesia...' : 'Tulis hiragana di sini...';
+  document.getElementById('answerInput').placeholder = pl;
+}
+
+function startQuiz() {
+  deck = shuffle(ALL_VOCAB.filter(v=>selectedKat.has(v.kategori)));
+  currentIdx=0; benar=0; salah=0; checkedIdx.clear();
+  document.getElementById('menuArea').classList.add('hidden');
+  document.getElementById('quizArea').style.display='block';
+  document.getElementById('resultWrap').style.display='none';
+  renderCard();
+}
+
+function renderCard() {
+  if (!deck.length) return;
+  const v = deck[currentIdx];
+  const { prompt, sub, answer } = getQA(v);
+  const col = KAT_COLORS[v.kategori]||'#888';
+  const total = deck.length;
+
+  document.getElementById('qAccent').style.background = col;
+  document.getElementById('qKatBadge').textContent = v.kategori;
+  document.getElementById('qKatBadge').style.background = col+'22';
+  document.getElementById('qKatBadge').style.color = col;
+  document.getElementById('qNumLabel').textContent = 'Soal ' + (currentIdx+1);
+  document.getElementById('qPrompt').textContent = prompt;
+  document.getElementById('qSub').textContent = sub;
+
+  const inp = document.getElementById('answerInput');
+  inp.value=''; inp.className='hira-input'; inp.disabled=false;
+  inp.placeholder = currentMode==='hira-indo' ? 'Tulis arti dalam bahasa Indonesia...' : 'Tulis hiragana di sini...';
+
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('hintBtn').style.display='none';
+
+  document.getElementById('cardCounter').textContent=(currentIdx+1)+' / '+total;
+  document.getElementById('benarCounter').textContent='✓ '+benar+' benar';
+  document.getElementById('progFill').style.width=Math.round((currentIdx+1)/total*100)+'%';
+  document.getElementById('statBenar').textContent='✓ BENAR: '+benar;
+  document.getElementById('statSalah').textContent='✗ SALAH: '+salah;
+  document.getElementById('statSisa').textContent='▸ SISA: '+(total-currentIdx-1);
+  document.getElementById('prevBtn').disabled = currentIdx===0;
+  document.getElementById('nextBtn').disabled = currentIdx===deck.length-1;
+
+  const qCard = document.getElementById('qCard');
+  qCard.classList.remove('slide-in'); void qCard.offsetWidth; qCard.classList.add('slide-in');
+  inp.focus();
+}
+
+function checkAnswer() {
+  if (!deck.length) return;
+  const v = deck[currentIdx];
+  const { answer } = getQA(v);
+  const inp = document.getElementById('answerInput');
+  const userAns = normalize(inp.value);
+  if (!userAns) return;
+
+  const acceptable = answer.split('/').map(a=>normalize(a));
+  const isOk = acceptable.some(a => userAns===a || userAns===a.replace(/\s/g,''));
+
+  inp.disabled = true;
+  const fb = document.getElementById('feedback');
+
+  if (!checkedIdx.has(currentIdx)) {
+    checkedIdx.add(currentIdx);
+    if (isOk) benar++; else salah++;
+  }
+
+  if (isOk) {
+    inp.className='hira-input correct';
+    fb.className='feedback correct';
+    fb.textContent='Benar! Jawaban: ' + answer;
+  } else {
+    inp.className='hira-input wrong';
+    fb.className='feedback wrong';
+    fb.textContent='Kurang tepat. Jawaban: ' + answer;
+    document.getElementById('hintBtn').style.display='none';
+  }
+  document.getElementById('statBenar').textContent='✓ BENAR: '+benar;
+  document.getElementById('statSalah').textContent='✗ SALAH: '+salah;
+  document.getElementById('benarCounter').textContent='✓ '+benar+' benar';
+
+  if (currentIdx===deck.length-1) setTimeout(showResult, 700);
+}
+
+function showHint() {
+  const v = deck[currentIdx];
+  document.getElementById('answerInput').value = getQA(v).answer;
+}
+
+function showResult() {
+  document.getElementById('quizArea').style.display='none';
+  const rw = document.getElementById('resultWrap'); rw.style.display='block';
+  const pct = Math.round(benar/deck.length*100);
+  document.getElementById('resultScore').textContent = benar+'/'+deck.length;
+  document.getElementById('resultPct').textContent = pct+'%';
+  const msg = pct===100?'Sempurna! Semua jawaban benar!':pct>=80?'Bagus sekali! Hampir sempurna!':pct>=50?'Lumayan! Terus semangat berlatih!':'Semangat! Coba ulangi lagi ya!';
+  document.getElementById('resultMsg').textContent = msg;
+}
+
+function goCard(dir) {
+  const n = currentIdx+dir;
+  if (n<0||n>=deck.length) return;
+  currentIdx=n; renderCard();
+}
+
+function shuffleAndRestart() {
+  deck = shuffle(ALL_VOCAB.filter(v=>selectedKat.has(v.kategori)));
+  currentIdx=0; benar=0; salah=0; checkedIdx.clear();
+  document.getElementById('resultWrap').style.display='none';
+  document.getElementById('quizArea').style.display='block';
+  renderCard();
+}
+
+function backToMenu() {
+  document.getElementById('quizArea').style.display='none';
+  document.getElementById('resultWrap').style.display='none';
+  document.getElementById('menuArea').classList.remove('hidden');
+}
+
+document.getElementById('answerInput').addEventListener('keydown', e => {
+  if (e.key==='Enter') {
+    const inp = document.getElementById('answerInput');
+    if (inp.disabled) goCard(1); else checkAnswer();
+  }
+});
+
+initChips(); updateStartBtn();
+</script>
+</body>
+</html>
